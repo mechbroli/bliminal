@@ -1,0 +1,2198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BLIMINAL — Go Beyond</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Outfit:wght@200;300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --gold: #C9A96E;
+    --gold-light: #E8D5B0;
+    --gold-dark: #8B6B3D;
+    --black: #0A0A0A;
+    --near-black: #111111;
+    --dark: #1A1A1A;
+    --charcoal: #2C2C2C;
+    --mid: #5A5A5A;
+    --light: #B8B8B8;
+    --off-white: #F5F3EF;
+    --white: #FFFFFF;
+    --serif: 'Cormorant Garamond', Georgia, serif;
+    --sans: 'Outfit', sans-serif;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: var(--sans);
+    background: var(--black);
+    color: var(--white);
+    overflow-x: hidden;
+    cursor: none;
+  }
+
+  /* Custom cursor */
+  .cursor {
+    width: 10px; height: 10px;
+    background: var(--gold);
+    border-radius: 50%;
+    position: fixed; top: 0; left: 0;
+    pointer-events: none; z-index: 9999;
+    transform: translate(-50%, -50%);
+    transition: transform 0.1s, width 0.2s, height 0.2s, opacity 0.2s;
+    mix-blend-mode: difference;
+  }
+  .cursor-ring {
+    width: 36px; height: 36px;
+    border: 1px solid var(--gold);
+    border-radius: 50%;
+    position: fixed; top: 0; left: 0;
+    pointer-events: none; z-index: 9998;
+    transform: translate(-50%, -50%);
+    transition: transform 0.15s ease, width 0.3s, height 0.3s, opacity 0.3s;
+    opacity: 0.6;
+  }
+  a, button, .nav-link, .btn, .piece-card, .style-card, .artist-card {
+    cursor: none;
+  }
+
+  /* Pages */
+  .page { display: none; min-height: 100vh; }
+  .page.active { display: block; }
+
+  /* NAV */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    padding: 28px 60px;
+    display: flex; align-items: center; justify-content: space-between;
+    transition: background 0.4s, padding 0.4s;
+  }
+  nav.scrolled {
+    background: rgba(10,10,10,0.95);
+    backdrop-filter: blur(20px);
+    padding: 18px 60px;
+    border-bottom: 1px solid rgba(201,169,110,0.15);
+  }
+  .nav-logo {
+    font-family: var(--serif);
+    font-size: 26px;
+    font-weight: 300;
+    letter-spacing: 0.25em;
+    color: var(--white);
+    text-decoration: none;
+    text-transform: uppercase;
+  }
+  .nav-logo span { color: var(--gold); }
+  .nav-links { display: flex; gap: 44px; align-items: center; }
+  .nav-link {
+    font-family: var(--sans);
+    font-size: 11px;
+    font-weight: 300;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--light);
+    text-decoration: none;
+    position: relative;
+    transition: color 0.3s;
+    background: none; border: none;
+  }
+  .nav-link::after {
+    content: '';
+    position: absolute; bottom: -4px; left: 0; right: 0;
+    height: 1px; background: var(--gold);
+    transform: scaleX(0); transform-origin: left;
+    transition: transform 0.3s ease;
+  }
+  .nav-link:hover, .nav-link.active { color: var(--gold); }
+  .nav-link:hover::after, .nav-link.active::after { transform: scaleX(1); }
+  .nav-cta {
+    font-size: 10px; font-weight: 400; letter-spacing: 0.2em;
+    text-transform: uppercase; padding: 10px 24px;
+    border: 1px solid var(--gold); color: var(--gold);
+    text-decoration: none; transition: all 0.3s;
+    background: none;
+  }
+  .nav-cta:hover { background: var(--gold); color: var(--black); }
+
+  /* BUTTONS */
+  .btn {
+    display: inline-block; text-decoration: none; border: none;
+    font-family: var(--sans); cursor: none;
+    transition: all 0.3s;
+  }
+  .btn-primary {
+    background: var(--gold); color: var(--black);
+    font-size: 11px; font-weight: 500; letter-spacing: 0.2em;
+    text-transform: uppercase; padding: 16px 40px;
+  }
+  .btn-primary:hover { background: var(--gold-light); }
+  .btn-outline {
+    background: transparent; color: var(--gold);
+    border: 1px solid var(--gold);
+    font-size: 11px; font-weight: 400; letter-spacing: 0.2em;
+    text-transform: uppercase; padding: 15px 40px;
+  }
+  .btn-outline:hover { background: var(--gold); color: var(--black); }
+  .btn-white {
+    background: transparent; color: var(--white);
+    border: 1px solid rgba(255,255,255,0.4);
+    font-size: 11px; font-weight: 400; letter-spacing: 0.2em;
+    text-transform: uppercase; padding: 14px 36px;
+  }
+  .btn-white:hover { border-color: var(--white); background: rgba(255,255,255,0.08); }
+
+  /* DIVIDERS */
+  .gold-line {
+    width: 60px; height: 1px; background: var(--gold);
+    margin: 0 auto 20px;
+  }
+  .gold-line-left {
+    width: 60px; height: 1px; background: var(--gold); margin-bottom: 20px;
+  }
+
+  /* SECTION LABELS */
+  .section-label {
+    font-family: var(--sans); font-size: 10px; font-weight: 400;
+    letter-spacing: 0.35em; text-transform: uppercase;
+    color: var(--gold); margin-bottom: 16px;
+  }
+
+  /* ===================== HOME PAGE ===================== */
+
+  /* HERO */
+  #hero {
+    position: relative; height: 100vh;
+    display: flex; align-items: center; justify-content: center;
+    overflow: hidden;
+  }
+  .hero-bg {
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(ellipse at 30% 60%, rgba(201,169,110,0.08) 0%, transparent 60%),
+      radial-gradient(ellipse at 80% 20%, rgba(201,169,110,0.05) 0%, transparent 50%),
+      var(--black);
+  }
+  .hero-grid {
+    position: absolute; inset: 0;
+    background-image:
+      linear-gradient(rgba(201,169,110,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(201,169,110,0.04) 1px, transparent 1px);
+    background-size: 80px 80px;
+    mask-image: radial-gradient(ellipse at center, black 30%, transparent 80%);
+  }
+  .hero-content {
+    position: relative; z-index: 2;
+    text-align: center; padding: 0 20px;
+  }
+  .hero-eyebrow {
+    font-family: var(--sans); font-size: 10px; font-weight: 300;
+    letter-spacing: 0.5em; text-transform: uppercase;
+    color: var(--gold); margin-bottom: 32px;
+    animation: fadeUp 1s ease both;
+  }
+  .hero-title {
+    font-family: var(--serif); font-size: clamp(72px, 12vw, 160px);
+    font-weight: 300; letter-spacing: 0.1em;
+    line-height: 0.9; color: var(--white);
+    text-transform: uppercase;
+    animation: fadeUp 1s 0.2s ease both;
+  }
+  .hero-title .accent { color: var(--gold); font-style: italic; }
+  .hero-sub {
+    font-family: var(--serif); font-size: clamp(14px, 2vw, 20px);
+    font-weight: 300; letter-spacing: 0.2em;
+    color: var(--light); margin-top: 24px;
+    font-style: italic;
+    animation: fadeUp 1s 0.4s ease both;
+  }
+  .hero-actions {
+    display: flex; gap: 20px; justify-content: center;
+    margin-top: 52px;
+    animation: fadeUp 1s 0.6s ease both;
+  }
+  .hero-scroll {
+    position: absolute; bottom: 40px; left: 50%;
+    transform: translateX(-50%);
+    display: flex; flex-direction: column; align-items: center; gap: 8px;
+    color: var(--light); font-size: 9px; letter-spacing: 0.3em;
+    text-transform: uppercase; animation: fadeIn 2s 1s ease both;
+  }
+  .hero-scroll-line {
+    width: 1px; height: 40px; background: var(--gold);
+    animation: scrollPulse 2s infinite;
+  }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes scrollPulse {
+    0%, 100% { opacity: 0.4; transform: scaleY(0.6); transform-origin: top; }
+    50% { opacity: 1; transform: scaleY(1); }
+  }
+
+  /* TICKER */
+  .ticker {
+    background: var(--gold); padding: 12px 0; overflow: hidden;
+    display: flex; gap: 0;
+  }
+  .ticker-inner {
+    display: flex; gap: 60px; white-space: nowrap;
+    animation: ticker 30s linear infinite;
+    font-family: var(--sans); font-size: 10px; font-weight: 500;
+    letter-spacing: 0.3em; text-transform: uppercase; color: var(--black);
+  }
+  .ticker-inner span { flex-shrink: 0; }
+  @keyframes ticker { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+  /* SECTIONS */
+  .section {
+    padding: 120px 60px;
+    max-width: 1400px; margin: 0 auto;
+  }
+  .section-full { padding: 120px 0; }
+  .section-header { text-align: center; margin-bottom: 80px; }
+  .section-header-left { margin-bottom: 60px; }
+  .section-title {
+    font-family: var(--serif); font-size: clamp(36px, 5vw, 64px);
+    font-weight: 300; letter-spacing: 0.05em; line-height: 1.1;
+  }
+  .section-title em { color: var(--gold); font-style: italic; }
+  .section-desc {
+    font-family: var(--sans); font-weight: 300; font-size: 15px;
+    line-height: 1.8; color: var(--light); max-width: 540px;
+    margin: 16px auto 0;
+  }
+  .section-desc-left { margin: 16px 0 0; max-width: 480px; }
+
+  /* NEW RELEASES */
+  .releases-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-rows: auto auto;
+    gap: 2px;
+  }
+  .release-card {
+    position: relative; overflow: hidden;
+    aspect-ratio: 3/4;
+    background: var(--dark);
+    transition: all 0.5s ease;
+  }
+  .release-card.featured {
+    grid-column: 1 / 3; grid-row: 1 / 2;
+    aspect-ratio: auto;
+    min-height: 600px;
+  }
+  .release-card:hover .release-overlay { opacity: 1; }
+  .release-card:hover .release-img-bg { transform: scale(1.06); }
+  .release-img-bg {
+    position: absolute; inset: 0;
+    transition: transform 0.8s ease;
+  }
+  .release-card:nth-child(1) .release-img-bg {
+    background: linear-gradient(135deg, #1a1410 0%, #2d2015 40%, #1a1410 100%);
+  }
+  .release-card:nth-child(2) .release-img-bg {
+    background: linear-gradient(135deg, #0d1520 0%, #1a2535 40%, #0d1520 100%);
+  }
+  .release-card:nth-child(3) .release-img-bg {
+    background: linear-gradient(135deg, #150d1a 0%, #25153a 40%, #150d1a 100%);
+  }
+  .release-placeholder {
+    position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    opacity: 0.12;
+    font-family: var(--serif); font-size: 120px; font-weight: 300; color: var(--gold);
+    letter-spacing: -0.05em;
+  }
+  .release-card.featured .release-placeholder { font-size: 200px; }
+  .release-badge {
+    position: absolute; top: 24px; left: 24px;
+    font-family: var(--sans); font-size: 9px; font-weight: 500;
+    letter-spacing: 0.3em; text-transform: uppercase;
+    padding: 6px 14px; border: 1px solid var(--gold); color: var(--gold);
+    background: rgba(10,10,10,0.8);
+  }
+  .release-overlay {
+    position: absolute; inset: 0;
+    background: linear-gradient(to top, rgba(10,10,10,0.95) 0%, rgba(10,10,10,0.3) 60%, transparent 100%);
+    opacity: 0.7; transition: opacity 0.4s;
+    display: flex; flex-direction: column; justify-content: flex-end;
+    padding: 32px;
+  }
+  .release-card.featured .release-overlay { opacity: 1; }
+  .release-info-tag {
+    font-family: var(--sans); font-size: 9px; font-weight: 400;
+    letter-spacing: 0.3em; text-transform: uppercase; color: var(--gold);
+    margin-bottom: 8px;
+  }
+  .release-name {
+    font-family: var(--serif); font-size: 32px; font-weight: 300;
+    line-height: 1.1; margin-bottom: 6px;
+  }
+  .release-card.featured .release-name { font-size: 48px; }
+  .release-artist {
+    font-family: var(--sans); font-size: 12px; font-weight: 300;
+    letter-spacing: 0.15em; color: var(--light); margin-bottom: 20px;
+  }
+  .release-meta {
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .release-price {
+    font-family: var(--serif); font-size: 22px; font-weight: 400; color: var(--gold);
+  }
+  .release-btn {
+    font-family: var(--sans); font-size: 9px; font-weight: 400;
+    letter-spacing: 0.2em; text-transform: uppercase;
+    padding: 8px 20px; border: 1px solid rgba(255,255,255,0.4);
+    color: var(--white); background: none;
+    transition: all 0.3s;
+  }
+  .release-btn:hover { border-color: var(--gold); color: var(--gold); }
+
+  /* COUNTDOWN / UPCOMING */
+  .upcoming-section {
+    background: var(--near-black);
+    border-top: 1px solid rgba(201,169,110,0.1);
+    border-bottom: 1px solid rgba(201,169,110,0.1);
+    padding: 100px 60px;
+  }
+  .upcoming-inner { max-width: 1400px; margin: 0 auto; }
+  .upcoming-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 60px;
+    align-items: start; margin-top: 60px;
+  }
+  .drop-card {
+    padding: 40px; border: 1px solid rgba(201,169,110,0.15);
+    position: relative; transition: border-color 0.3s;
+  }
+  .drop-card:hover { border-color: rgba(201,169,110,0.4); }
+  .drop-number {
+    position: absolute; top: -20px; left: 40px;
+    font-family: var(--serif); font-size: 80px; font-weight: 300;
+    color: rgba(201,169,110,0.06); line-height: 1; letter-spacing: -0.02em;
+    user-select: none;
+  }
+  .drop-label {
+    font-family: var(--sans); font-size: 10px; letter-spacing: 0.3em;
+    text-transform: uppercase; color: var(--gold); margin-bottom: 16px;
+  }
+  .drop-title {
+    font-family: var(--serif); font-size: 30px; font-weight: 300;
+    line-height: 1.2; margin-bottom: 12px;
+  }
+  .drop-artist {
+    font-family: var(--sans); font-size: 13px; font-weight: 300;
+    color: var(--light); margin-bottom: 24px; letter-spacing: 0.08em;
+  }
+  .countdown {
+    display: flex; gap: 24px; margin-bottom: 28px;
+  }
+  .countdown-unit { text-align: center; }
+  .countdown-num {
+    font-family: var(--serif); font-size: 40px; font-weight: 300;
+    color: var(--gold); line-height: 1;
+    display: block;
+  }
+  .countdown-label {
+    font-family: var(--sans); font-size: 9px; letter-spacing: 0.2em;
+    text-transform: uppercase; color: var(--mid); margin-top: 4px;
+    display: block;
+  }
+  .drop-sep { width: 1px; background: rgba(201,169,110,0.2); margin: 0 4px; }
+  .drop-pieces {
+    font-family: var(--sans); font-size: 11px; font-weight: 300;
+    color: var(--light); letter-spacing: 0.1em;
+    padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.06);
+  }
+  .drop-pieces strong { color: var(--gold); font-weight: 500; }
+
+  /* STYLES */
+  .styles-section { background: var(--black); }
+  .styles-grid {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 2px;
+    margin-top: 0;
+  }
+  .style-card {
+    position: relative; overflow: hidden;
+    aspect-ratio: 2/3; background: var(--dark);
+    transition: all 0.4s;
+  }
+  .style-bg {
+    position: absolute; inset: 0; transition: transform 0.6s ease;
+  }
+  .style-card:hover .style-bg { transform: scale(1.08); }
+  .style-card:nth-child(1) .style-bg { background: linear-gradient(160deg, #1c1008 0%, #3d2200 100%); }
+  .style-card:nth-child(2) .style-bg { background: linear-gradient(160deg, #080d1c 0%, #0d1e3d 100%); }
+  .style-card:nth-child(3) .style-bg { background: linear-gradient(160deg, #0f0c1a 0%, #221840 100%); }
+  .style-card:nth-child(4) .style-bg { background: linear-gradient(160deg, #0d1a10 0%, #1a3a1e 100%); }
+  .style-symbol {
+    position: absolute; inset: 0; display: flex; align-items: center;
+    justify-content: center; font-family: var(--serif);
+    font-size: 100px; font-weight: 300; opacity: 0.08;
+    color: var(--white); transition: opacity 0.4s;
+  }
+  .style-card:hover .style-symbol { opacity: 0.15; }
+  .style-overlay {
+    position: absolute; inset: 0;
+    background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, transparent 60%);
+    display: flex; flex-direction: column; justify-content: flex-end;
+    padding: 28px 24px;
+  }
+  .style-tag {
+    font-family: var(--sans); font-size: 9px; letter-spacing: 0.3em;
+    text-transform: uppercase; color: var(--gold); margin-bottom: 6px;
+  }
+  .style-name {
+    font-family: var(--serif); font-size: 24px; font-weight: 300;
+    margin-bottom: 6px; line-height: 1.1;
+  }
+  .style-count {
+    font-family: var(--sans); font-size: 11px; font-weight: 300;
+    color: var(--light); letter-spacing: 0.1em;
+  }
+  .style-arrow {
+    position: absolute; top: 24px; right: 24px;
+    width: 36px; height: 36px; border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    font-size: 16px; color: var(--white); opacity: 0; transition: all 0.3s;
+  }
+  .style-card:hover .style-arrow { opacity: 1; }
+
+  /* MANIFESTO */
+  .manifesto {
+    padding: 120px 60px;
+    background: var(--near-black);
+    border-top: 1px solid rgba(201,169,110,0.1);
+    text-align: center;
+  }
+  .manifesto-quote {
+    font-family: var(--serif); font-size: clamp(28px, 4vw, 52px);
+    font-weight: 300; font-style: italic; line-height: 1.4;
+    max-width: 900px; margin: 0 auto;
+    color: var(--white);
+  }
+  .manifesto-quote em { color: var(--gold); }
+  .manifesto-attr {
+    font-family: var(--sans); font-size: 11px; font-weight: 300;
+    letter-spacing: 0.3em; text-transform: uppercase;
+    color: var(--mid); margin-top: 32px;
+  }
+
+  /* FEATURED ARTISTS strip */
+  .artists-strip {
+    padding: 80px 60px;
+    max-width: 1400px; margin: 0 auto;
+  }
+  .artists-row {
+    display: flex; gap: 24px; margin-top: 50px;
+    overflow-x: auto; scrollbar-width: none;
+  }
+  .artists-row::-webkit-scrollbar { display: none; }
+  .artist-pill {
+    flex-shrink: 0;
+    display: flex; align-items: center; gap: 16px;
+    padding: 16px 24px; border: 1px solid rgba(201,169,110,0.15);
+    transition: border-color 0.3s;
+  }
+  .artist-pill:hover { border-color: rgba(201,169,110,0.5); }
+  .artist-avatar {
+    width: 44px; height: 44px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--serif); font-size: 18px; font-weight: 300;
+    flex-shrink: 0;
+  }
+  .artist-avatar.a1 { background: rgba(201,169,110,0.15); color: var(--gold); }
+  .artist-avatar.a2 { background: rgba(60,60,120,0.3); color: #9090ff; }
+  .artist-avatar.a3 { background: rgba(120,40,40,0.3); color: #ff9090; }
+  .artist-avatar.a4 { background: rgba(40,100,60,0.3); color: #90ffb0; }
+  .artist-info { min-width: 120px; }
+  .artist-name-sm {
+    font-family: var(--serif); font-size: 16px; font-weight: 400;
+    margin-bottom: 2px;
+  }
+  .artist-medium {
+    font-family: var(--sans); font-size: 11px; font-weight: 300;
+    color: var(--mid); letter-spacing: 0.08em;
+  }
+
+  /* FOOTER */
+  footer {
+    padding: 80px 60px 40px;
+    border-top: 1px solid rgba(201,169,110,0.15);
+    background: var(--black);
+  }
+  .footer-inner { max-width: 1400px; margin: 0 auto; }
+  .footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 60px; }
+  .footer-brand { }
+  .footer-logo {
+    font-family: var(--serif); font-size: 32px; font-weight: 300;
+    letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 16px;
+  }
+  .footer-logo span { color: var(--gold); }
+  .footer-tagline {
+    font-family: var(--sans); font-size: 12px; font-weight: 300;
+    color: var(--mid); letter-spacing: 0.2em; text-transform: uppercase;
+    margin-bottom: 24px;
+  }
+  .footer-desc {
+    font-family: var(--sans); font-size: 13px; font-weight: 300;
+    color: var(--light); line-height: 1.8; max-width: 280px;
+  }
+  .footer-col h5 {
+    font-family: var(--sans); font-size: 10px; font-weight: 500;
+    letter-spacing: 0.3em; text-transform: uppercase; color: var(--gold);
+    margin-bottom: 24px;
+  }
+  .footer-links { list-style: none; display: flex; flex-direction: column; gap: 12px; }
+  .footer-links a {
+    font-family: var(--sans); font-size: 13px; font-weight: 300;
+    color: var(--light); text-decoration: none; letter-spacing: 0.05em;
+    transition: color 0.3s;
+  }
+  .footer-links a:hover { color: var(--gold); }
+  .footer-bottom {
+    border-top: 1px solid rgba(255,255,255,0.06);
+    padding-top: 28px; margin-top: 60px;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .footer-copy {
+    font-family: var(--sans); font-size: 11px; font-weight: 300;
+    color: var(--mid); letter-spacing: 0.1em;
+  }
+  .footer-social { display: flex; gap: 20px; }
+  .footer-social a {
+    font-family: var(--sans); font-size: 10px; font-weight: 400;
+    letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--mid); text-decoration: none; transition: color 0.3s;
+  }
+  .footer-social a:hover { color: var(--gold); }
+
+  /* ===================== ABOUT PAGE ===================== */
+  .about-hero {
+    height: 70vh; background: var(--near-black);
+    display: flex; align-items: center; justify-content: center;
+    position: relative; overflow: hidden;
+    border-bottom: 1px solid rgba(201,169,110,0.1);
+  }
+  .about-hero-bg {
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse at 50% 70%, rgba(201,169,110,0.07) 0%, transparent 70%);
+  }
+  .about-hero-content { position: relative; z-index: 2; text-align: center; }
+  .about-hero-title {
+    font-family: var(--serif); font-size: clamp(48px, 8vw, 110px);
+    font-weight: 300; letter-spacing: 0.08em; text-transform: uppercase;
+    line-height: 0.95;
+  }
+  .about-hero-title .gold { color: var(--gold); font-style: italic; }
+  .about-hero-sub {
+    font-family: var(--sans); font-size: 12px; font-weight: 300;
+    letter-spacing: 0.4em; text-transform: uppercase;
+    color: var(--light); margin-top: 24px;
+  }
+
+  .about-body { padding: 100px 60px; max-width: 1400px; margin: 0 auto; }
+  .about-intro {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 100px; align-items: center;
+    margin-bottom: 100px;
+  }
+  .about-intro-text .label { margin-bottom: 16px; }
+  .about-big-text {
+    font-family: var(--serif); font-size: clamp(28px, 3vw, 42px);
+    font-weight: 300; line-height: 1.4; margin-bottom: 24px;
+  }
+  .about-big-text em { color: var(--gold); font-style: italic; }
+  .about-para {
+    font-family: var(--sans); font-size: 14px; font-weight: 300;
+    color: var(--light); line-height: 1.9; margin-bottom: 16px;
+  }
+  .about-visual {
+    position: relative; aspect-ratio: 3/4;
+    background: var(--dark); overflow: hidden;
+  }
+  .about-visual-inner {
+    position: absolute; inset: 0;
+    background: linear-gradient(135deg, #1a1410 0%, #2d2015 50%, #111111 100%);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .about-symbol {
+    font-family: var(--serif); font-size: 180px; font-weight: 300;
+    color: var(--gold); opacity: 0.08; letter-spacing: -0.05em;
+  }
+  .about-visual-label {
+    position: absolute; bottom: 28px; left: 28px;
+    font-family: var(--sans); font-size: 10px; letter-spacing: 0.3em;
+    text-transform: uppercase; color: var(--gold);
+  }
+  .about-visual-border {
+    position: absolute; top: 20px; right: -20px; bottom: -20px; left: 20px;
+    border: 1px solid rgba(201,169,110,0.2); pointer-events: none;
+    z-index: -1;
+  }
+
+  /* Pillars */
+  .pillars {
+    background: var(--near-black); padding: 100px 60px;
+    border-top: 1px solid rgba(201,169,110,0.1);
+  }
+  .pillars-inner { max-width: 1400px; margin: 0 auto; }
+  .pillars-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 2px; margin-top: 60px;
+  }
+  .pillar-card {
+    padding: 48px 40px;
+    border: 1px solid rgba(201,169,110,0.1);
+    transition: border-color 0.3s, background 0.3s;
+    position: relative; overflow: hidden;
+  }
+  .pillar-card:hover {
+    border-color: rgba(201,169,110,0.3);
+    background: rgba(201,169,110,0.03);
+  }
+  .pillar-icon {
+    font-family: var(--serif); font-size: 48px; font-weight: 300;
+    color: var(--gold); margin-bottom: 24px; line-height: 1;
+  }
+  .pillar-num {
+    position: absolute; top: 24px; right: 28px;
+    font-family: var(--serif); font-size: 60px; font-weight: 300;
+    color: rgba(201,169,110,0.05); line-height: 1;
+  }
+  .pillar-title {
+    font-family: var(--serif); font-size: 22px; font-weight: 400;
+    margin-bottom: 12px; letter-spacing: 0.02em;
+  }
+  .pillar-desc {
+    font-family: var(--sans); font-size: 13px; font-weight: 300;
+    color: var(--light); line-height: 1.8;
+  }
+
+  /* Team */
+  .team-section { padding: 100px 60px; max-width: 1400px; margin: 0 auto; }
+  .team-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 40px; margin-top: 60px; }
+  .team-card { text-align: center; }
+  .team-portrait {
+    width: 100%; aspect-ratio: 1;
+    position: relative; overflow: hidden;
+    margin-bottom: 24px;
+  }
+  .team-portrait-inner {
+    position: absolute; inset: 0; display: flex; align-items: center;
+    justify-content: center; font-family: var(--serif); font-size: 60px;
+    font-weight: 300; letter-spacing: 0.05em;
+  }
+  .tp1 { background: linear-gradient(135deg, #1c1408 0%, #3d2a08 100%); color: var(--gold); }
+  .tp2 { background: linear-gradient(135deg, #0a0a18 0%, #1a1a40 100%); color: #9090dd; }
+  .tp3 { background: linear-gradient(135deg, #100814 0%, #2a1040 100%); color: #cc90ff; }
+  .team-name {
+    font-family: var(--serif); font-size: 22px; font-weight: 400; margin-bottom: 4px;
+  }
+  .team-role {
+    font-family: var(--sans); font-size: 11px; font-weight: 300;
+    letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold);
+    margin-bottom: 12px;
+  }
+  .team-bio {
+    font-family: var(--sans); font-size: 13px; font-weight: 300;
+    color: var(--light); line-height: 1.7;
+  }
+
+  /* Stats strip */
+  .stats-strip {
+    background: var(--gold); padding: 60px;
+    display: flex; justify-content: center; gap: 0;
+  }
+  .stat-item {
+    text-align: center; flex: 1; max-width: 220px;
+    padding: 0 40px; position: relative;
+  }
+  .stat-item + .stat-item::before {
+    content: ''; position: absolute; left: 0; top: 20%; bottom: 20%;
+    width: 1px; background: rgba(0,0,0,0.15);
+  }
+  .stat-num {
+    font-family: var(--serif); font-size: 56px; font-weight: 300;
+    color: var(--black); line-height: 1;
+  }
+  .stat-label {
+    font-family: var(--sans); font-size: 10px; font-weight: 500;
+    letter-spacing: 0.3em; text-transform: uppercase; color: rgba(0,0,0,0.6);
+    margin-top: 8px;
+  }
+
+  /* ===================== ARTIST SIGNUP PAGE ===================== */
+  .signup-hero {
+    height: 60vh; background: var(--near-black);
+    display: flex; align-items: center; justify-content: center;
+    position: relative; overflow: hidden;
+  }
+  .signup-hero-bg {
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse at 70% 50%, rgba(201,169,110,0.08) 0%, transparent 60%);
+  }
+  .signup-hero-content { position: relative; z-index: 2; text-align: center; }
+  .signup-title {
+    font-family: var(--serif); font-size: clamp(42px, 7vw, 96px);
+    font-weight: 300; letter-spacing: 0.08em; text-transform: uppercase;
+    line-height: 0.95;
+  }
+  .signup-title .gold { color: var(--gold); font-style: italic; }
+  .signup-hero-sub {
+    font-family: var(--sans); font-size: 13px; font-weight: 300;
+    color: var(--light); margin-top: 20px; letter-spacing: 0.1em;
+    max-width: 500px; margin-left: auto; margin-right: auto; line-height: 1.7;
+  }
+
+  /* Benefits */
+  .benefits-bar {
+    background: var(--dark); padding: 50px 60px;
+    border-top: 1px solid rgba(201,169,110,0.1);
+    border-bottom: 1px solid rgba(201,169,110,0.1);
+  }
+  .benefits-inner {
+    max-width: 1400px; margin: 0 auto;
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 40px;
+  }
+  .benefit-item { text-align: center; }
+  .benefit-icon {
+    font-family: var(--serif); font-size: 32px; color: var(--gold); margin-bottom: 12px;
+  }
+  .benefit-title {
+    font-family: var(--sans); font-size: 12px; font-weight: 500;
+    letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 8px;
+  }
+  .benefit-desc {
+    font-family: var(--sans); font-size: 12px; font-weight: 300;
+    color: var(--light); line-height: 1.6;
+  }
+
+  /* Form */
+  .signup-form-section {
+    padding: 100px 60px; max-width: 1000px; margin: 0 auto;
+  }
+  .form-header { text-align: center; margin-bottom: 60px; }
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+  .form-group { display: flex; flex-direction: column; gap: 8px; }
+  .form-group.full { grid-column: 1 / -1; }
+  .form-label {
+    font-family: var(--sans); font-size: 10px; font-weight: 400;
+    letter-spacing: 0.25em; text-transform: uppercase; color: var(--gold);
+  }
+  .form-input, .form-select, .form-textarea {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(201,169,110,0.2);
+    color: var(--white); font-family: var(--sans);
+    font-size: 14px; font-weight: 300; padding: 14px 18px;
+    outline: none; transition: border-color 0.3s;
+    appearance: none;
+  }
+  .form-input:focus, .form-select:focus, .form-textarea:focus {
+    border-color: var(--gold);
+    background: rgba(201,169,110,0.04);
+  }
+  .form-input::placeholder, .form-textarea::placeholder { color: var(--mid); }
+  .form-select { cursor: none; }
+  .form-select option { background: var(--dark); color: var(--white); }
+  .form-textarea { resize: vertical; min-height: 120px; }
+  .form-checkboxes { display: flex; flex-direction: column; gap: 12px; }
+  .form-check { display: flex; align-items: center; gap: 12px; }
+  .form-check-input {
+    width: 16px; height: 16px;
+    border: 1px solid rgba(201,169,110,0.4);
+    background: transparent; appearance: none;
+    cursor: none; position: relative; flex-shrink: 0;
+    transition: background 0.2s;
+  }
+  .form-check-input:checked { background: var(--gold); }
+  .form-check-input:checked::after {
+    content: '✓'; position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 10px; color: var(--black); font-weight: 700;
+  }
+  .form-check-label {
+    font-family: var(--sans); font-size: 13px; font-weight: 300; color: var(--light);
+  }
+  .form-submit { text-align: center; margin-top: 48px; }
+  .upload-area {
+    border: 1px dashed rgba(201,169,110,0.3);
+    padding: 40px; text-align: center;
+    transition: border-color 0.3s, background 0.3s;
+  }
+  .upload-area:hover { border-color: var(--gold); background: rgba(201,169,110,0.02); }
+  .upload-icon { font-size: 32px; color: var(--gold); margin-bottom: 12px; }
+  .upload-text {
+    font-family: var(--sans); font-size: 13px; font-weight: 300; color: var(--light);
+    margin-bottom: 4px;
+  }
+  .upload-sub {
+    font-family: var(--sans); font-size: 11px; font-weight: 300;
+    color: var(--mid); letter-spacing: 0.1em;
+  }
+
+  /* Process */
+  .process-section {
+    background: var(--near-black);
+    border-top: 1px solid rgba(201,169,110,0.1);
+    padding: 100px 60px;
+  }
+  .process-inner { max-width: 1200px; margin: 0 auto; }
+  .process-steps {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 40px;
+    margin-top: 60px; position: relative;
+  }
+  .process-steps::before {
+    content: '';
+    position: absolute; top: 28px; left: calc(25%/2 + 20px); right: calc(25%/2 + 20px);
+    height: 1px; background: rgba(201,169,110,0.2);
+  }
+  .process-step { text-align: center; position: relative; }
+  .step-circle {
+    width: 56px; height: 56px; border: 1px solid var(--gold); border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 20px;
+    font-family: var(--serif); font-size: 20px; font-weight: 300; color: var(--gold);
+    background: var(--near-black);
+    position: relative; z-index: 1;
+  }
+  .step-title {
+    font-family: var(--serif); font-size: 18px; font-weight: 400; margin-bottom: 8px;
+  }
+  .step-desc {
+    font-family: var(--sans); font-size: 12px; font-weight: 300;
+    color: var(--light); line-height: 1.6;
+  }
+
+  /* ===================== COLLECTION PAGE ===================== */
+  .collection-hero {
+    height: 60vh; background: var(--near-black);
+    display: flex; align-items: center; justify-content: center;
+    position: relative; overflow: hidden;
+  }
+  .collection-hero-bg {
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse at 30% 60%, rgba(201,169,110,0.07) 0%, transparent 60%);
+  }
+  .collection-hero-content { position: relative; z-index: 2; text-align: center; }
+  .collection-title {
+    font-family: var(--serif); font-size: clamp(42px, 7vw, 96px);
+    font-weight: 300; letter-spacing: 0.08em; text-transform: uppercase;
+    line-height: 0.95;
+  }
+  .collection-title .gold { color: var(--gold); font-style: italic; }
+
+  /* Filters */
+  .collection-filters {
+    padding: 36px 60px;
+    border-bottom: 1px solid rgba(201,169,110,0.1);
+    display: flex; gap: 0; align-items: center; justify-content: center;
+  }
+  .filter-btn {
+    font-family: var(--sans); font-size: 10px; font-weight: 400;
+    letter-spacing: 0.2em; text-transform: uppercase;
+    padding: 10px 24px; border: none; border-bottom: 2px solid transparent;
+    background: none; color: var(--mid); transition: all 0.3s;
+  }
+  .filter-btn:hover { color: var(--white); }
+  .filter-btn.active { color: var(--gold); border-bottom-color: var(--gold); }
+
+  /* Pieces grid */
+  .pieces-section { padding: 60px; max-width: 1400px; margin: 0 auto; }
+  .pieces-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 32px;
+  }
+  .piece-card {
+    position: relative; transition: all 0.3s;
+  }
+  .piece-card:hover { transform: translateY(-4px); }
+  .piece-img {
+    position: relative; overflow: hidden; aspect-ratio: 3/4;
+    margin-bottom: 20px;
+  }
+  .piece-img-bg {
+    position: absolute; inset: 0; transition: transform 0.6s ease;
+  }
+  .piece-card:hover .piece-img-bg { transform: scale(1.05); }
+  .piece-img-overlay {
+    position: absolute; inset: 0;
+    background: linear-gradient(to top, rgba(0,0,0,0.6) 0%, transparent 60%);
+    opacity: 0; transition: opacity 0.3s;
+    display: flex; align-items: flex-end; padding: 20px;
+  }
+  .piece-card:hover .piece-img-overlay { opacity: 1; }
+  .piece-quick-add {
+    width: 100%; padding: 12px;
+    font-family: var(--sans); font-size: 10px; font-weight: 500;
+    letter-spacing: 0.2em; text-transform: uppercase;
+    background: var(--gold); color: var(--black); border: none;
+  }
+  .piece-badges { position: absolute; top: 16px; left: 16px; display: flex; gap: 8px; }
+  .piece-badge {
+    font-family: var(--sans); font-size: 9px; font-weight: 500;
+    letter-spacing: 0.2em; text-transform: uppercase;
+    padding: 5px 10px;
+  }
+  .badge-1of1 { background: var(--gold); color: var(--black); }
+  .badge-limited { background: rgba(10,10,10,0.85); border: 1px solid rgba(255,255,255,0.3); color: var(--white); }
+  .badge-sold { background: rgba(10,10,10,0.85); border: 1px solid var(--mid); color: var(--mid); }
+  .piece-info { }
+  .piece-artist-tag {
+    font-family: var(--sans); font-size: 10px; font-weight: 400;
+    letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold);
+    margin-bottom: 6px;
+  }
+  .piece-title {
+    font-family: var(--serif); font-size: 20px; font-weight: 400;
+    margin-bottom: 4px; line-height: 1.2;
+  }
+  .piece-type {
+    font-family: var(--sans); font-size: 12px; font-weight: 300;
+    color: var(--light); margin-bottom: 12px; letter-spacing: 0.08em;
+  }
+  .piece-bottom {
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .piece-price {
+    font-family: var(--serif); font-size: 20px; font-weight: 400; color: var(--gold);
+  }
+  .piece-edition {
+    font-family: var(--sans); font-size: 10px; font-weight: 300;
+    color: var(--mid); letter-spacing: 0.1em;
+  }
+
+  /* Sold out overlay */
+  .piece-img.sold-out::after {
+    content: 'SOLD';
+    position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    background: rgba(0,0,0,0.6);
+    font-family: var(--sans); font-size: 14px; font-weight: 500;
+    letter-spacing: 0.5em; color: var(--mid);
+  }
+
+  /* QR info strip */
+  .qr-strip {
+    background: var(--near-black);
+    border-top: 1px solid rgba(201,169,110,0.1);
+    padding: 60px;
+    text-align: center;
+  }
+  .qr-inner { max-width: 700px; margin: 0 auto; }
+  .qr-text {
+    font-family: var(--serif); font-size: 24px; font-weight: 300; font-style: italic;
+    line-height: 1.5; margin-bottom: 16px;
+  }
+  .qr-sub {
+    font-family: var(--sans); font-size: 13px; font-weight: 300;
+    color: var(--light); line-height: 1.7; margin-bottom: 28px;
+  }
+
+  /* UTIL */
+  .text-center { text-align: center; }
+  .mt-8 { margin-top: 8px; }
+  .mt-16 { margin-top: 16px; }
+  .mt-24 { margin-top: 24px; }
+  .mt-40 { margin-top: 40px; }
+  .mt-60 { margin-top: 60px; }
+  .mb-60 { margin-bottom: 60px; }
+
+  /* PAGE TRANSITION */
+  .page { animation: pageIn 0.5s ease both; }
+  @keyframes pageIn { from { opacity: 0; } to { opacity: 1; } }
+
+  /* Piece color themes */
+  .pc1 { background: linear-gradient(135deg, #1a1208 0%, #332200 100%); }
+  .pc2 { background: linear-gradient(135deg, #080c18 0%, #121e3a 100%); }
+  .pc3 { background: linear-gradient(135deg, #120a18 0%, #281440 100%); }
+  .pc4 { background: linear-gradient(135deg, #0a1410 0%, #152a1e 100%); }
+  .pc5 { background: linear-gradient(135deg, #1a0808 0%, #3a1010 100%); }
+  .pc6 { background: linear-gradient(135deg, #0e0e0e 0%, #222222 100%); }
+
+  .piece-glyph {
+    position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+    font-family: var(--serif); font-weight: 300; opacity: 0.1; color: var(--white);
+    font-size: 100px;
+  }
+</style>
+</head>
+<body>
+
+<!-- Cursor -->
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursor-ring"></div>
+
+<!-- NAVIGATION -->
+<nav id="navbar">
+  <a class="nav-logo" onclick="showPage('home')">BL<span>IM</span>INAL</a>
+  <div class="nav-links">
+    <button class="nav-link active" id="nav-home" onclick="showPage('home')">Home</button>
+    <button class="nav-link" id="nav-about" onclick="showPage('about')">About</button>
+    <button class="nav-link" id="nav-collection" onclick="showPage('collection')">Collection</button>
+    <button class="nav-link" id="nav-signup" onclick="showPage('signup')">Artist Apply</button>
+    <button class="nav-cta btn" onclick="showPage('collection')">Shop Now</button>
+  </div>
+</nav>
+
+<!-- ======================== HOME PAGE ======================== -->
+<div class="page active" id="page-home">
+
+  <!-- Hero -->
+  <section id="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-grid"></div>
+    <div class="hero-content">
+      <p class="hero-eyebrow">Wearable Art · Limited Editions · One of One</p>
+      <h1 class="hero-title">BL<span class="accent">im</span>inal</h1>
+      <p class="hero-sub">Go Beyond — Where Art Becomes Fashion</p>
+      <div class="hero-actions">
+        <button class="btn btn-primary" onclick="showPage('collection')">Explore Collection</button>
+        <button class="btn btn-outline" onclick="showPage('about')">Our Story</button>
+      </div>
+    </div>
+    <div class="hero-scroll">
+      <div class="hero-scroll-line"></div>
+      Scroll
+    </div>
+  </section>
+
+  <!-- Ticker -->
+  <div class="ticker">
+    <div class="ticker-inner" id="ticker-inner">
+      <span>New Drop — Void Series ✦</span>
+      <span>Artist-Led Collections ✦</span>
+      <span>Limited 1 of 1 Pieces ✦</span>
+      <span>QR Storytelling ✦</span>
+      <span>Go Beyond ✦</span>
+      <span>Archive & Rarity System ✦</span>
+      <span>New Drop — Void Series ✦</span>
+      <span>Artist-Led Collections ✦</span>
+      <span>Limited 1 of 1 Pieces ✦</span>
+      <span>QR Storytelling ✦</span>
+      <span>Go Beyond ✦</span>
+      <span>Archive & Rarity System ✦</span>
+    </div>
+  </div>
+
+  <!-- New Releases -->
+  <div class="section">
+    <div class="section-header">
+      <p class="section-label">Latest Drops</p>
+      <div class="gold-line"></div>
+      <h2 class="section-title">New <em>Releases</em></h2>
+      <p class="section-desc">Each drop is a cultural moment. Every piece — a story permanently woven into fabric.</p>
+    </div>
+    <div class="releases-grid">
+      <div class="release-card featured">
+        <div class="release-img-bg"></div>
+        <div class="release-placeholder">B</div>
+        <span class="release-badge">1 of 1</span>
+        <div class="release-overlay">
+          <div class="release-info-tag">Featured Drop — Spring 2025</div>
+          <div class="release-name">Void Reverie</div>
+          <div class="release-artist">by Sora Nakamura</div>
+          <div class="release-meta">
+            <div class="release-price">$1,400</div>
+            <button class="release-btn" onclick="showPage('collection')">View Piece</button>
+          </div>
+        </div>
+      </div>
+      <div class="release-card">
+        <div class="release-img-bg"></div>
+        <div class="release-placeholder">∞</div>
+        <span class="release-badge">3 / 10</span>
+        <div class="release-overlay">
+          <div class="release-info-tag">Serialised Run</div>
+          <div class="release-name">Liminal Blue</div>
+          <div class="release-artist">by Alexei Petrov</div>
+          <div class="release-meta">
+            <div class="release-price">$680</div>
+            <button class="release-btn" onclick="showPage('collection')">View Piece</button>
+          </div>
+        </div>
+      </div>
+      <div class="release-card">
+        <div class="release-img-bg"></div>
+        <div class="release-placeholder">◈</div>
+        <span class="release-badge">Limited</span>
+        <div class="release-overlay">
+          <div class="release-info-tag">New Release</div>
+          <div class="release-name">Phantom Weave</div>
+          <div class="release-artist">by Mia Delacroix</div>
+          <div class="release-meta">
+            <div class="release-price">$920</div>
+            <button class="release-btn" onclick="showPage('collection')">View Piece</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="text-center mt-40">
+      <button class="btn btn-outline" onclick="showPage('collection')">View Full Collection</button>
+    </div>
+  </div>
+
+  <!-- Upcoming Drops -->
+  <div class="upcoming-section">
+    <div class="upcoming-inner">
+      <div class="section-header">
+        <p class="section-label">Coming Soon</p>
+        <div class="gold-line"></div>
+        <h2 class="section-title">Upcoming <em>Drops</em></h2>
+        <p class="section-desc">Mark your calendar. Every drop is an event — not just a product launch.</p>
+      </div>
+      <div class="upcoming-grid">
+        <div class="drop-card">
+          <div class="drop-number">01</div>
+          <div class="drop-label">Drop 001 — June 2025</div>
+          <div class="drop-title">Eclipse Collection</div>
+          <div class="drop-artist">A collaboration with Zara Jin & collective artists</div>
+          <div class="countdown">
+            <div class="countdown-unit">
+              <span class="countdown-num" id="d1">14</span>
+              <span class="countdown-label">Days</span>
+            </div>
+            <div class="drop-sep"></div>
+            <div class="countdown-unit">
+              <span class="countdown-num" id="h1">08</span>
+              <span class="countdown-label">Hours</span>
+            </div>
+            <div class="drop-sep"></div>
+            <div class="countdown-unit">
+              <span class="countdown-num" id="m1">33</span>
+              <span class="countdown-label">Mins</span>
+            </div>
+            <div class="drop-sep"></div>
+            <div class="countdown-unit">
+              <span class="countdown-num" id="s1">00</span>
+              <span class="countdown-label">Secs</span>
+            </div>
+          </div>
+          <div class="drop-pieces">
+            <strong>12 pieces</strong> available — 1/1 and serialised editions
+          </div>
+        </div>
+        <div class="drop-card">
+          <div class="drop-number">02</div>
+          <div class="drop-label">Drop 002 — August 2025</div>
+          <div class="drop-title">Aether Series</div>
+          <div class="drop-artist">Solo exhibition drop by Marcos Verano</div>
+          <div class="countdown">
+            <div class="countdown-unit">
+              <span class="countdown-num">67</span>
+              <span class="countdown-label">Days</span>
+            </div>
+            <div class="drop-sep"></div>
+            <div class="countdown-unit">
+              <span class="countdown-num">12</span>
+              <span class="countdown-label">Hours</span>
+            </div>
+            <div class="drop-sep"></div>
+            <div class="countdown-unit">
+              <span class="countdown-num">00</span>
+              <span class="countdown-label">Mins</span>
+            </div>
+            <div class="drop-sep"></div>
+            <div class="countdown-unit">
+              <span class="countdown-num">00</span>
+              <span class="countdown-label">Secs</span>
+            </div>
+          </div>
+          <div class="drop-pieces">
+            <strong>5 pieces</strong> available — all 1/1 unique originals
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Styles -->
+  <div class="section" style="padding-top:100px;">
+    <div class="section-header">
+      <p class="section-label">Browse by Style</p>
+      <div class="gold-line"></div>
+      <h2 class="section-title">Styles to <em>Discover</em></h2>
+    </div>
+  </div>
+  <div class="styles-grid">
+    <div class="style-card" onclick="showPage('collection')">
+      <div class="style-bg"></div>
+      <div class="style-symbol">✦</div>
+      <div class="style-overlay">
+        <div class="style-tag">Style</div>
+        <div class="style-name">Abstract</div>
+        <div class="style-count">18 Pieces</div>
+      </div>
+      <div class="style-arrow">→</div>
+    </div>
+    <div class="style-card" onclick="showPage('collection')">
+      <div class="style-bg"></div>
+      <div class="style-symbol">◈</div>
+      <div class="style-overlay">
+        <div class="style-tag">Style</div>
+        <div class="style-name">Surrealist</div>
+        <div class="style-count">12 Pieces</div>
+      </div>
+      <div class="style-arrow">→</div>
+    </div>
+    <div class="style-card" onclick="showPage('collection')">
+      <div class="style-bg"></div>
+      <div class="style-symbol">∞</div>
+      <div class="style-overlay">
+        <div class="style-tag">Style</div>
+        <div class="style-name">Conceptual</div>
+        <div class="style-count">9 Pieces</div>
+      </div>
+      <div class="style-arrow">→</div>
+    </div>
+    <div class="style-card" onclick="showPage('collection')">
+      <div class="style-bg"></div>
+      <div class="style-symbol">◉</div>
+      <div class="style-overlay">
+        <div class="style-tag">Style</div>
+        <div class="style-name">Minimal</div>
+        <div class="style-count">22 Pieces</div>
+      </div>
+      <div class="style-arrow">→</div>
+    </div>
+  </div>
+  <div class="text-center" style="padding: 48px 0;">
+    <button class="btn btn-outline" onclick="showPage('collection')">See All Styles</button>
+  </div>
+
+  <!-- Manifesto -->
+  <div class="manifesto">
+    <p class="section-label">Our Manifesto</p>
+    <div class="gold-line"></div>
+    <p class="manifesto-quote">
+      "We are not another clothing brand. We are a <em>cultural platform</em> —
+      where artists and collectors meet, where every piece is a statement,
+      and where fashion finally goes beyond."
+    </p>
+    <p class="manifesto-attr">— BLiminal Founding Principle</p>
+    <div style="margin-top: 40px;">
+      <button class="btn btn-outline" onclick="showPage('about')">Read Our Story</button>
+    </div>
+  </div>
+
+  <!-- Featured Artists -->
+  <div class="artists-strip">
+    <div class="section-header-left">
+      <p class="section-label">Our Artists</p>
+      <div class="gold-line-left"></div>
+      <h2 class="section-title" style="font-size: clamp(28px,4vw,48px);">The Minds <em>Behind</em> the Pieces</h2>
+    </div>
+    <div class="artists-row">
+      <div class="artist-pill">
+        <div class="artist-avatar a1">S</div>
+        <div class="artist-info">
+          <div class="artist-name-sm">Sora Nakamura</div>
+          <div class="artist-medium">Textile · Mixed Media</div>
+        </div>
+      </div>
+      <div class="artist-pill">
+        <div class="artist-avatar a2">A</div>
+        <div class="artist-info">
+          <div class="artist-name-sm">Alexei Petrov</div>
+          <div class="artist-medium">Digital · Print</div>
+        </div>
+      </div>
+      <div class="artist-pill">
+        <div class="artist-avatar a3">M</div>
+        <div class="artist-info">
+          <div class="artist-name-sm">Mia Delacroix</div>
+          <div class="artist-medium">Illustration · Embroidery</div>
+        </div>
+      </div>
+      <div class="artist-pill">
+        <div class="artist-avatar a4">Z</div>
+        <div class="artist-info">
+          <div class="artist-name-sm">Zara Jin</div>
+          <div class="artist-medium">Sculpture · Wearables</div>
+        </div>
+      </div>
+      <div class="artist-pill">
+        <div class="artist-avatar a1">K</div>
+        <div class="artist-info">
+          <div class="artist-name-sm">Kenji Sato</div>
+          <div class="artist-medium">Ink · Pattern Design</div>
+        </div>
+      </div>
+      <div class="artist-pill">
+        <div class="artist-avatar a2">V</div>
+        <div class="artist-info">
+          <div class="artist-name-sm">Valentina Russo</div>
+          <div class="artist-medium">Portraiture · Garment</div>
+        </div>
+      </div>
+    </div>
+    <div class="mt-40">
+      <button class="btn btn-white" onclick="showPage('signup')">Apply as an Artist →</button>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <div class="footer-logo">BL<span>im</span>inal</div>
+          <div class="footer-tagline">Go Beyond</div>
+          <p class="footer-desc">A curated fashion brand collaborating with independent artists to create limited-edition and one-of-one wearable art pieces. Every piece tells a story.</p>
+        </div>
+        <div class="footer-col">
+          <h5>Navigate</h5>
+          <ul class="footer-links">
+            <li><a onclick="showPage('home')" href="#">Home</a></li>
+            <li><a onclick="showPage('about')" href="#">About Us</a></li>
+            <li><a onclick="showPage('collection')" href="#">Collection</a></li>
+            <li><a onclick="showPage('signup')" href="#">Artist Apply</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h5>Information</h5>
+          <ul class="footer-links">
+            <li><a href="#">Sizing Guide</a></li>
+            <li><a href="#">Care Instructions</a></li>
+            <li><a href="#">Authentication</a></li>
+            <li><a href="#">Provenance Archive</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h5>Contact</h5>
+          <ul class="footer-links">
+            <li><a href="#">studio@bliminal.com</a></li>
+            <li><a href="#">Instagram</a></li>
+            <li><a href="#">TikTok</a></li>
+            <li><a href="#">Newsletter</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span class="footer-copy">© 2025 BLiminal / HyperLim. All rights reserved.</span>
+        <div class="footer-social">
+          <a href="#">Instagram</a>
+          <a href="#">TikTok</a>
+          <a href="#">Pinterest</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+</div>
+
+<!-- ======================== ABOUT PAGE ======================== -->
+<div class="page" id="page-about">
+  <div class="about-hero">
+    <div class="about-hero-bg"></div>
+    <div class="about-hero-content">
+      <p class="section-label" style="margin-bottom:20px;">Est. 2025</p>
+      <h1 class="about-hero-title">The <span class="gold">Story</span><br>Behind the Brand</h1>
+      <p class="about-hero-sub">Art. Identity. Scarcity. Culture.</p>
+    </div>
+  </div>
+
+  <div class="about-body">
+    <div class="about-intro">
+      <div class="about-intro-text">
+        <p class="section-label">What We Are</p>
+        <div class="gold-line-left"></div>
+        <h2 class="about-big-text">Fashion as a <em>cultural statement</em>, not just a product.</h2>
+        <p class="about-para">BLiminal was born from a simple but radical idea: what if clothing could carry the same weight as a gallery painting? What if wearing a piece of fabric meant owning something irreplaceable — a collaboration between a collector and an artist?</p>
+        <p class="about-para">We curate partnerships with independent artists across every discipline — from textile sculpture to digital print — and transform their vision into limited-edition wearable art. Every drop is a cultural event. Every garment holds a story.</p>
+        <p class="about-para" style="color: var(--gold);">Every item is one of a kind.</p>
+        <div style="margin-top: 32px;">
+          <button class="btn btn-primary" onclick="showPage('collection')">Explore the Collection</button>
+        </div>
+      </div>
+      <div class="about-visual">
+        <div class="about-visual-inner">
+          <div class="about-symbol">B</div>
+        </div>
+        <div class="about-visual-label">BLiminal Studio, 2025</div>
+        <div class="about-visual-border"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats-strip">
+    <div class="stat-item">
+      <div class="stat-num">1/1</div>
+      <div class="stat-label">True Originals</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num">30+</div>
+      <div class="stat-label">Artist Partners</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num">100%</div>
+      <div class="stat-label">Creative Freedom</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num">0</div>
+      <div class="stat-label">Overstock Policy</div>
+    </div>
+  </div>
+
+  <!-- Pillars -->
+  <div class="pillars">
+    <div class="pillars-inner">
+      <div class="section-header">
+        <p class="section-label">What Sets Us Apart</p>
+        <div class="gold-line"></div>
+        <h2 class="section-title">Five <em>Differentiators</em></h2>
+        <p class="section-desc">No other brand combines all five of these — and that's intentional.</p>
+      </div>
+      <div class="pillars-grid">
+        <div class="pillar-card">
+          <div class="pillar-num">01</div>
+          <div class="pillar-icon">✦</div>
+          <div class="pillar-title">Artist-Led Collections</div>
+          <p class="pillar-desc">Every piece originates from an artist's vision, not a trend report. We provide the brief — they bring the soul.</p>
+        </div>
+        <div class="pillar-card">
+          <div class="pillar-num">02</div>
+          <div class="pillar-icon">◎</div>
+          <div class="pillar-title">1/1 & Serialised Runs</div>
+          <p class="pillar-desc">True scarcity — each buyer owns something unique or numbered. No reprints. No restocks. Ever.</p>
+        </div>
+        <div class="pillar-card">
+          <div class="pillar-num">03</div>
+          <div class="pillar-icon">◈</div>
+          <div class="pillar-title">Wearable Art Concept</div>
+          <p class="pillar-desc">We sit in the gallery space, not just the clothing rack. Fashion finally earns its place alongside fine art.</p>
+        </div>
+        <div class="pillar-card">
+          <div class="pillar-num">04</div>
+          <div class="pillar-icon">⊞</div>
+          <div class="pillar-title">Archive & Rarity System</div>
+          <p class="pillar-desc">Full tracking of each piece's provenance and artist history — a permanent record for every garment we release.</p>
+        </div>
+        <div class="pillar-card">
+          <div class="pillar-num">05</div>
+          <div class="pillar-icon">◉</div>
+          <div class="pillar-title">QR Storytelling</div>
+          <p class="pillar-desc">Every garment links to the artist's story, process, and interview. The clothing is just the beginning.</p>
+        </div>
+        <div class="pillar-card" style="display:flex;align-items:center;justify-content:center;text-align:center;">
+          <div>
+            <p class="section-label">Ready to wear the story?</p>
+            <div class="gold-line"></div>
+            <h3 style="font-family:var(--serif);font-size:24px;font-weight:300;margin-bottom:20px;">Find your piece.</h3>
+            <button class="btn btn-primary" onclick="showPage('collection')">Shop Collection</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Team -->
+  <div class="team-section">
+    <div class="section-header">
+      <p class="section-label">Behind the Vision</p>
+      <div class="gold-line"></div>
+      <h2 class="section-title">The <em>People</em></h2>
+      <p class="section-desc">The creative force and curatorial minds who built BLiminal from the ground up.</p>
+    </div>
+    <div class="team-grid">
+      <div class="team-card">
+        <div class="team-portrait">
+          <div class="team-portrait-inner tp1">BL</div>
+        </div>
+        <div class="team-name">Jordan Avery</div>
+        <div class="team-role">Founder & Creative Director</div>
+        <p class="team-bio">Former gallery curator turned fashion disruptor. Jordan's vision is simple: art belongs on bodies, not just walls.</p>
+      </div>
+      <div class="team-card">
+        <div class="team-portrait">
+          <div class="team-portrait-inner tp2">AR</div>
+        </div>
+        <div class="team-name">Anya Reeves</div>
+        <div class="team-role">Head of Artist Relations</div>
+        <p class="team-bio">Anya scouts and nurtures artist partnerships — ensuring every collaboration is built on trust, transparency, and creative alignment.</p>
+      </div>
+      <div class="team-card">
+        <div class="team-portrait">
+          <div class="team-portrait-inner tp3">MT</div>
+        </div>
+        <div class="team-name">Marcus Tran</div>
+        <div class="team-role">Production & Quality Director</div>
+        <p class="team-bio">With 12 years in premium garment production, Marcus ensures every piece meets the exacting standards the BLiminal name demands.</p>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <div class="footer-logo">BL<span>im</span>inal</div>
+          <div class="footer-tagline">Go Beyond</div>
+          <p class="footer-desc">A curated fashion brand collaborating with independent artists to create limited-edition and one-of-one wearable art pieces.</p>
+        </div>
+        <div class="footer-col">
+          <h5>Navigate</h5>
+          <ul class="footer-links">
+            <li><a onclick="showPage('home')" href="#">Home</a></li>
+            <li><a onclick="showPage('about')" href="#">About Us</a></li>
+            <li><a onclick="showPage('collection')" href="#">Collection</a></li>
+            <li><a onclick="showPage('signup')" href="#">Artist Apply</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h5>Information</h5>
+          <ul class="footer-links">
+            <li><a href="#">Sizing Guide</a></li>
+            <li><a href="#">Authentication</a></li>
+            <li><a href="#">Provenance Archive</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h5>Contact</h5>
+          <ul class="footer-links">
+            <li><a href="#">studio@bliminal.com</a></li>
+            <li><a href="#">Instagram</a></li>
+            <li><a href="#">TikTok</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span class="footer-copy">© 2025 BLiminal / HyperLim. All rights reserved.</span>
+        <div class="footer-social">
+          <a href="#">Instagram</a>
+          <a href="#">TikTok</a>
+          <a href="#">Pinterest</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+</div>
+
+<!-- ======================== ARTIST SIGNUP PAGE ======================== -->
+<div class="page" id="page-signup">
+  <div class="signup-hero">
+    <div class="signup-hero-bg"></div>
+    <div class="signup-hero-content">
+      <p class="section-label" style="margin-bottom:20px;">For Independent Artists</p>
+      <h1 class="signup-title">Apply to <span class="gold">Create</span><br>With BLiminal</h1>
+      <p class="signup-hero-sub">Join our curated network of artists. Bring your vision to life on garments worn by collectors who value artistic identity above all else.</p>
+    </div>
+  </div>
+
+  <!-- Benefits -->
+  <div class="benefits-bar">
+    <div class="benefits-inner">
+      <div class="benefit-item">
+        <div class="benefit-icon">◎</div>
+        <div class="benefit-title">Revenue Sharing</div>
+        <p class="benefit-desc">Transparent royalties on every unit sold. Your success and ours are aligned.</p>
+      </div>
+      <div class="benefit-item">
+        <div class="benefit-icon">✦</div>
+        <div class="benefit-title">Creative Freedom</div>
+        <p class="benefit-desc">We provide the brief. You own the artistic direction — always.</p>
+      </div>
+      <div class="benefit-item">
+        <div class="benefit-icon">◈</div>
+        <div class="benefit-title">Exhibition Rights</div>
+        <p class="benefit-desc">Your full portfolio showcased in our flagship gallery space and digital platform.</p>
+      </div>
+      <div class="benefit-item">
+        <div class="benefit-icon">⊞</div>
+        <div class="benefit-title">Signing Bonus</div>
+        <p class="benefit-desc">Upfront compensation to begin your first collaboration with confidence.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Process -->
+  <div class="process-section">
+    <div class="process-inner">
+      <div class="section-header">
+        <p class="section-label">How It Works</p>
+        <div class="gold-line"></div>
+        <h2 class="section-title">The Artist <em>Journey</em></h2>
+      </div>
+      <div class="process-steps">
+        <div class="process-step">
+          <div class="step-circle">1</div>
+          <div class="step-title">Apply</div>
+          <p class="step-desc">Submit your portfolio and creative statement. We review every application personally.</p>
+        </div>
+        <div class="process-step">
+          <div class="step-circle">2</div>
+          <div class="step-title">Curate</div>
+          <p class="step-desc">If selected, we work with you to develop a concept brief for your collection.</p>
+        </div>
+        <div class="process-step">
+          <div class="step-circle">3</div>
+          <div class="step-title">Create</div>
+          <p class="step-desc">You design. We handle production, QC, and garment manufacturing with care.</p>
+        </div>
+        <div class="process-step">
+          <div class="step-circle">4</div>
+          <div class="step-title">Drop</div>
+          <p class="step-desc">Your collection launches as a cultural event — with your story at the centre.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Form -->
+  <div class="signup-form-section">
+    <div class="form-header">
+      <p class="section-label">Artist Application</p>
+      <div class="gold-line"></div>
+      <h2 class="section-title" style="font-size:clamp(28px,4vw,52px);">Start Your <em>Application</em></h2>
+      <p class="section-desc">We review every submission with genuine curiosity. Tell us who you are.</p>
+    </div>
+
+    <div class="form-grid" id="artist-form">
+      <div class="form-group">
+        <label class="form-label">First Name</label>
+        <input type="text" class="form-input" placeholder="Your first name">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Last Name / Alias</label>
+        <input type="text" class="form-input" placeholder="Your surname or artist alias">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Email Address</label>
+        <input type="email" class="form-input" placeholder="studio@yourdomain.com">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Location</label>
+        <input type="text" class="form-input" placeholder="City, Country">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Primary Medium</label>
+        <select class="form-select">
+          <option value="" disabled selected>Select your primary medium</option>
+          <option>Textile & Fabric Art</option>
+          <option>Digital Illustration</option>
+          <option>Traditional Illustration</option>
+          <option>Mixed Media</option>
+          <option>Photography</option>
+          <option>Sculpture & 3D</option>
+          <option>Graphic Design</option>
+          <option>Embroidery & Needlework</option>
+          <option>Printmaking</option>
+          <option>Other</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Art Style</label>
+        <select class="form-select">
+          <option value="" disabled selected>Your aesthetic direction</option>
+          <option>Abstract</option>
+          <option>Surrealist</option>
+          <option>Conceptual</option>
+          <option>Minimal</option>
+          <option>Maximalist</option>
+          <option>Figurative</option>
+          <option>Geometric</option>
+          <option>Organic / Natural</option>
+          <option>Street / Urban</option>
+          <option>Experimental</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Portfolio URL</label>
+        <input type="url" class="form-input" placeholder="https://yourportfolio.com">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Instagram Handle</label>
+        <input type="text" class="form-input" placeholder="@yourstudio">
+      </div>
+      <div class="form-group full">
+        <label class="form-label">Your Creative Statement</label>
+        <textarea class="form-textarea" rows="5" placeholder="Tell us about your practice, what drives your work, and why you want to collaborate with BLiminal..."></textarea>
+      </div>
+      <div class="form-group full">
+        <label class="form-label">Portfolio Upload <span style="color:var(--mid);font-size:9px;">(Optional — PDF or ZIP, max 20MB)</span></label>
+        <div class="upload-area">
+          <div class="upload-icon">↑</div>
+          <p class="upload-text">Drag & drop your portfolio file here</p>
+          <p class="upload-sub">PDF · ZIP · Max 20MB</p>
+        </div>
+      </div>
+      <div class="form-group full">
+        <label class="form-label" style="margin-bottom:16px;">Collaboration Interests</label>
+        <div class="form-checkboxes">
+          <div class="form-check">
+            <input type="checkbox" class="form-check-input" id="c1">
+            <label class="form-check-label" for="c1">1 of 1 unique garments</label>
+          </div>
+          <div class="form-check">
+            <input type="checkbox" class="form-check-input" id="c2">
+            <label class="form-check-label" for="c2">Serialised limited-edition runs (3–25 pieces)</label>
+          </div>
+          <div class="form-check">
+            <input type="checkbox" class="form-check-input" id="c3">
+            <label class="form-check-label" for="c3">Customisation studio workshops</label>
+          </div>
+          <div class="form-check">
+            <input type="checkbox" class="form-check-input" id="c4">
+            <label class="form-check-label" for="c4">Gallery exhibition with BLiminal</label>
+          </div>
+          <div class="form-check">
+            <input type="checkbox" class="form-check-input" id="c5">
+            <label class="form-check-label" for="c5">Drop launch event collaboration</label>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="form-submit">
+      <button class="btn btn-primary" onclick="handleSubmit()" style="padding: 18px 60px; font-size: 12px; letter-spacing: 0.25em;">
+        Submit Application
+      </button>
+      <p style="font-family:var(--sans);font-size:12px;color:var(--mid);margin-top:16px;line-height:1.6;">
+        We review every application personally and respond within 14 days.<br>
+        We don't partner with every artist who applies — curation is our art too.
+      </p>
+    </div>
+
+    <div id="form-success" style="display:none; text-align:center; padding: 60px 0;">
+      <p class="section-label">Application Received</p>
+      <div class="gold-line"></div>
+      <h2 style="font-family:var(--serif);font-size:42px;font-weight:300;margin-bottom:16px;">Thank <em style="color:var(--gold);">You</em></h2>
+      <p style="font-family:var(--sans);font-size:14px;color:var(--light);line-height:1.8;max-width:480px;margin:0 auto 32px;">
+        Your application has been submitted. Our curation team will review your work personally and be in touch within 14 days.
+      </p>
+      <button class="btn btn-outline" onclick="showPage('home')">Return Home</button>
+    </div>
+  </div>
+
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <div class="footer-logo">BL<span>im</span>inal</div>
+          <div class="footer-tagline">Go Beyond</div>
+          <p class="footer-desc">A curated fashion brand collaborating with independent artists to create limited-edition and one-of-one wearable art pieces.</p>
+        </div>
+        <div class="footer-col">
+          <h5>Navigate</h5>
+          <ul class="footer-links">
+            <li><a onclick="showPage('home')" href="#">Home</a></li>
+            <li><a onclick="showPage('about')" href="#">About Us</a></li>
+            <li><a onclick="showPage('collection')" href="#">Collection</a></li>
+            <li><a onclick="showPage('signup')" href="#">Artist Apply</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h5>Artists</h5>
+          <ul class="footer-links">
+            <li><a href="#">Partner Benefits</a></li>
+            <li><a href="#">Revenue Model</a></li>
+            <li><a href="#">FAQ</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h5>Contact</h5>
+          <ul class="footer-links">
+            <li><a href="#">studio@bliminal.com</a></li>
+            <li><a href="#">Instagram</a></li>
+            <li><a href="#">TikTok</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span class="footer-copy">© 2025 BLiminal / HyperLim. All rights reserved.</span>
+        <div class="footer-social">
+          <a href="#">Instagram</a>
+          <a href="#">TikTok</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+</div>
+
+<!-- ======================== COLLECTION PAGE ======================== -->
+<div class="page" id="page-collection">
+  <div class="collection-hero">
+    <div class="collection-hero-bg"></div>
+    <div class="collection-hero-content">
+      <p class="section-label" style="margin-bottom:20px;">Archive & Current</p>
+      <h1 class="collection-title">The <span class="gold">Collection</span></h1>
+      <p style="font-family:var(--sans);font-size:13px;font-weight:300;color:var(--light);margin-top:20px;letter-spacing:0.15em;">
+        Every piece. Every story. Every artist.
+      </p>
+    </div>
+  </div>
+
+  <!-- Filters -->
+  <div class="collection-filters">
+    <button class="filter-btn active" onclick="filterCollection(this, 'all')">All Pieces</button>
+    <button class="filter-btn" onclick="filterCollection(this, '1of1')">1 of 1</button>
+    <button class="filter-btn" onclick="filterCollection(this, 'limited')">Limited Edition</button>
+    <button class="filter-btn" onclick="filterCollection(this, 'abstract')">Abstract</button>
+    <button class="filter-btn" onclick="filterCollection(this, 'surrealist')">Surrealist</button>
+    <button class="filter-btn" onclick="filterCollection(this, 'minimal')">Minimal</button>
+    <button class="filter-btn" onclick="filterCollection(this, 'available')">Available Now</button>
+  </div>
+
+  <!-- Pieces -->
+  <div class="pieces-section">
+    <div class="pieces-grid" id="pieces-grid">
+
+      <div class="piece-card" data-tags="1of1 abstract available">
+        <div class="piece-img">
+          <div class="piece-img-bg pc1"></div>
+          <div class="piece-glyph">✦</div>
+          <div class="piece-badges">
+            <span class="piece-badge badge-1of1">1 of 1</span>
+          </div>
+          <div class="piece-img-overlay">
+            <button class="piece-quick-add">Quick View</button>
+          </div>
+        </div>
+        <div class="piece-info">
+          <div class="piece-artist-tag">Sora Nakamura</div>
+          <div class="piece-title">Void Reverie</div>
+          <div class="piece-type">Oversized Jacket · Hand-painted</div>
+          <div class="piece-bottom">
+            <div class="piece-price">$1,400</div>
+            <div class="piece-edition">Unique Original</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="piece-card" data-tags="limited surrealist available">
+        <div class="piece-img">
+          <div class="piece-img-bg pc2"></div>
+          <div class="piece-glyph">∞</div>
+          <div class="piece-badges">
+            <span class="piece-badge badge-limited">3 / 10</span>
+          </div>
+          <div class="piece-img-overlay">
+            <button class="piece-quick-add">Quick View</button>
+          </div>
+        </div>
+        <div class="piece-info">
+          <div class="piece-artist-tag">Alexei Petrov</div>
+          <div class="piece-title">Liminal Blue</div>
+          <div class="piece-type">Crewneck · Digital Print</div>
+          <div class="piece-bottom">
+            <div class="piece-price">$680</div>
+            <div class="piece-edition">3 of 10 remaining</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="piece-card" data-tags="1of1 surrealist available">
+        <div class="piece-img">
+          <div class="piece-img-bg pc3"></div>
+          <div class="piece-glyph">◈</div>
+          <div class="piece-badges">
+            <span class="piece-badge badge-1of1">1 of 1</span>
+          </div>
+          <div class="piece-img-overlay">
+            <button class="piece-quick-add">Quick View</button>
+          </div>
+        </div>
+        <div class="piece-info">
+          <div class="piece-artist-tag">Mia Delacroix</div>
+          <div class="piece-title">Phantom Weave</div>
+          <div class="piece-type">Tailored Coat · Embroidered</div>
+          <div class="piece-bottom">
+            <div class="piece-price">$920</div>
+            <div class="piece-edition">Unique Original</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="piece-card" data-tags="limited minimal available">
+        <div class="piece-img">
+          <div class="piece-img-bg pc4"></div>
+          <div class="piece-glyph">◉</div>
+          <div class="piece-badges">
+            <span class="piece-badge badge-limited">7 / 25</span>
+          </div>
+          <div class="piece-img-overlay">
+            <button class="piece-quick-add">Quick View</button>
+          </div>
+        </div>
+        <div class="piece-info">
+          <div class="piece-artist-tag">Zara Jin</div>
+          <div class="piece-title">Quiet Architecture</div>
+          <div class="piece-type">Wide-leg Trousers · Woven Art</div>
+          <div class="piece-bottom">
+            <div class="piece-price">$540</div>
+            <div class="piece-edition">7 of 25 remaining</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="piece-card" data-tags="1of1 abstract">
+        <div class="piece-img sold-out">
+          <div class="piece-img-bg pc5"></div>
+          <div class="piece-glyph">⊞</div>
+          <div class="piece-badges">
+            <span class="piece-badge badge-sold">Sold</span>
+          </div>
+        </div>
+        <div class="piece-info">
+          <div class="piece-artist-tag">Kenji Sato</div>
+          <div class="piece-title">Ink & Memory</div>
+          <div class="piece-type">Bomber Jacket · Ink on Silk</div>
+          <div class="piece-bottom">
+            <div class="piece-price" style="color:var(--mid);">$1,100</div>
+            <div class="piece-edition">Archive — Sold</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="piece-card" data-tags="limited minimal available">
+        <div class="piece-img">
+          <div class="piece-img-bg pc6"></div>
+          <div class="piece-glyph">✧</div>
+          <div class="piece-badges">
+            <span class="piece-badge badge-limited">1 / 5</span>
+          </div>
+          <div class="piece-img-overlay">
+            <button class="piece-quick-add">Quick View</button>
+          </div>
+        </div>
+        <div class="piece-info">
+          <div class="piece-artist-tag">Valentina Russo</div>
+          <div class="piece-title">Shadow Portrait</div>
+          <div class="piece-type">Dress Shirt · Screen Print</div>
+          <div class="piece-bottom">
+            <div class="piece-price">$480</div>
+            <div class="piece-edition">1 of 5 remaining</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="piece-card" data-tags="1of1 abstract available">
+        <div class="piece-img">
+          <div class="piece-img-bg pc2" style="background:linear-gradient(135deg,#1a0c08 0%,#3d1800 100%)"></div>
+          <div class="piece-glyph">◇</div>
+          <div class="piece-badges">
+            <span class="piece-badge badge-1of1">1 of 1</span>
+          </div>
+          <div class="piece-img-overlay">
+            <button class="piece-quick-add">Quick View</button>
+          </div>
+        </div>
+        <div class="piece-info">
+          <div class="piece-artist-tag">Sora Nakamura</div>
+          <div class="piece-title">Ember Theory</div>
+          <div class="piece-type">Hand-Dyed Hoodie · Textile</div>
+          <div class="piece-bottom">
+            <div class="piece-price">$760</div>
+            <div class="piece-edition">Unique Original</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="piece-card" data-tags="limited surrealist available">
+        <div class="piece-img">
+          <div class="piece-img-bg" style="background:linear-gradient(135deg,#0a1010 0%,#102828 100%)"></div>
+          <div class="piece-glyph">∮</div>
+          <div class="piece-badges">
+            <span class="piece-badge badge-limited">2 / 8</span>
+          </div>
+          <div class="piece-img-overlay">
+            <button class="piece-quick-add">Quick View</button>
+          </div>
+        </div>
+        <div class="piece-info">
+          <div class="piece-artist-tag">Marcos Verano</div>
+          <div class="piece-title">Aether Fragment</div>
+          <div class="piece-type">Windbreaker · Digital Dye</div>
+          <div class="piece-bottom">
+            <div class="piece-price">$840</div>
+            <div class="piece-edition">2 of 8 remaining</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="piece-card" data-tags="1of1 minimal available">
+        <div class="piece-img">
+          <div class="piece-img-bg" style="background:linear-gradient(135deg,#0e0e14 0%,#1e1e30 100%)"></div>
+          <div class="piece-glyph">⬡</div>
+          <div class="piece-badges">
+            <span class="piece-badge badge-1of1">1 of 1</span>
+          </div>
+          <div class="piece-img-overlay">
+            <button class="piece-quick-add">Quick View</button>
+          </div>
+        </div>
+        <div class="piece-info">
+          <div class="piece-artist-tag">Valentina Russo</div>
+          <div class="piece-title">Gridded Silence</div>
+          <div class="piece-type">Structured Blazer · Geometric Print</div>
+          <div class="piece-bottom">
+            <div class="piece-price">$1,200</div>
+            <div class="piece-edition">Unique Original</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- QR Strip -->
+  <div class="qr-strip">
+    <div class="qr-inner">
+      <p class="section-label">Every Piece Has a Voice</p>
+      <div class="gold-line"></div>
+      <p class="qr-text">Scan the QR code on any BLiminal garment to unlock the artist's story, creative process, and exclusive interview.</p>
+      <p class="qr-sub">Fashion that speaks. Art that lives beyond the hanger. Each piece in our archive is permanently documented — its provenance, its artist, its moment in culture.</p>
+      <button class="btn btn-outline" onclick="showPage('about')">Learn More About Our Archive System</button>
+    </div>
+  </div>
+
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <div class="footer-logo">BL<span>im</span>inal</div>
+          <div class="footer-tagline">Go Beyond</div>
+          <p class="footer-desc">Wearable art. Limited editions. One of one. Every piece tells a story.</p>
+        </div>
+        <div class="footer-col">
+          <h5>Navigate</h5>
+          <ul class="footer-links">
+            <li><a onclick="showPage('home')" href="#">Home</a></li>
+            <li><a onclick="showPage('about')" href="#">About Us</a></li>
+            <li><a onclick="showPage('collection')" href="#">Collection</a></li>
+            <li><a onclick="showPage('signup')" href="#">Artist Apply</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h5>Shop</h5>
+          <ul class="footer-links">
+            <li><a href="#">1 of 1 Pieces</a></li>
+            <li><a href="#">Limited Editions</a></li>
+            <li><a href="#">Pre-Orders</a></li>
+            <li><a href="#">Archive</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h5>Contact</h5>
+          <ul class="footer-links">
+            <li><a href="#">studio@bliminal.com</a></li>
+            <li><a href="#">Instagram</a></li>
+            <li><a href="#">TikTok</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span class="footer-copy">© 2025 BLiminal / HyperLim. All rights reserved.</span>
+        <div class="footer-social">
+          <a href="#">Instagram</a>
+          <a href="#">TikTok</a>
+          <a href="#">Pinterest</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+</div>
+
+<script>
+// ---- CUSTOM CURSOR ----
+const cursor = document.getElementById('cursor');
+const ring = document.getElementById('cursor-ring');
+let mx = 0, my = 0, rx = 0, ry = 0;
+document.addEventListener('mousemove', e => {
+  mx = e.clientX; my = e.clientY;
+  cursor.style.left = mx + 'px'; cursor.style.top = my + 'px';
+});
+function animRing() {
+  rx += (mx - rx) * 0.12; ry += (my - ry) *.12;
+  ring.style.left = rx + 'px'; ring.style.top = ry + 'px';
+  requestAnimationFrame(animRing);
+}
+animRing();
+
+// ---- NAV SCROLL ----
+const navbar = document.getElementById('navbar');
+window.addEventListener('scroll', () => {
+  navbar.classList.toggle('scrolled', window.scrollY > 40);
+});
+
+// ---- PAGE NAVIGATION ----
+function showPage(name) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-' + name).classList.add('active');
+  document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+  const navEl = document.getElementById('nav-' + name);
+  if (navEl) navEl.classList.add('active');
+  window.scrollTo(0, 0);
+}
+
+// ---- COUNTDOWN ----
+function setCountdown() {
+  const target = new Date();
+  target.setDate(target.getDate() + 14);
+  target.setHours(target.getHours() + 8);
+  target.setMinutes(target.getMinutes() + 33);
+
+  function tick() {
+    const now = new Date();
+    const diff = target - now;
+    if (diff <= 0) return;
+    const d = Math.floor(diff / 86400000);
+    const h = Math.floor((diff % 86400000) / 3600000);
+    const m = Math.floor((diff % 3600000) / 60000);
+    const s = Math.floor((diff % 60000) / 1000);
+    const f = n => String(n).padStart(2,'0');
+    const d1 = document.getElementById('d1');
+    if (d1) {
+      d1.textContent = f(d);
+      document.getElementById('h1').textContent = f(h);
+      document.getElementById('m1').textContent = f(m);
+      document.getElementById('s1').textContent = f(s);
+    }
+  }
+  tick();
+  setInterval(tick, 1000);
+}
+setCountdown();
+
+// ---- COLLECTION FILTER ----
+function filterCollection(btn, tag) {
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.piece-card').forEach(card => {
+    if (tag === 'all') {
+      card.style.display = '';
+    } else {
+      const tags = (card.dataset.tags || '').split(' ');
+      card.style.display = tags.includes(tag) ? '' : 'none';
+    }
+  });
+}
+
+// ---- FORM SUBMIT ----
+function handleSubmit() {
+  document.getElementById('artist-form').style.display = 'none';
+  document.querySelector('.form-submit').style.display = 'none';
+  document.getElementById('form-success').style.display = 'block';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ---- CURSOR HOVER EFFECTS ----
+document.addEventListener('mouseover', e => {
+  if (e.target.closest('button, a, .piece-card, .style-card, .artist-pill, .drop-card, .release-card')) {
+    cursor.style.width = '14px'; cursor.style.height = '14px';
+    ring.style.width = '50px'; ring.style.height = '50px';
+  }
+});
+document.addEventListener('mouseout', e => {
+  if (e.target.closest('button, a, .piece-card, .style-card, .artist-pill, .drop-card, .release-card')) {
+    cursor.style.width = '10px'; cursor.style.height = '10px';
+    ring.style.width = '36px'; ring.style.height = '36px';
+  }
+});
+</script>
+</body>
+</html>
