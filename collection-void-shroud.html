@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Void & Shroud — BLIMINAL</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Outfit:wght@200;300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --gold: #C9A96E;
+    --gold-light: #E8D5B0;
+    --gold-dark: #8B6B3D;
+    --black: #0A0A0A;
+    --near-black: #111111;
+    --dark: #1A1A1A;
+    --charcoal: #2C2C2C;
+    --mid: #5A5A5A;
+    --light: #B8B8B8;
+    --off-white: #F5F3EF;
+    --white: #FFFFFF;
+    --serif: 'Cormorant Garamond', Georgia, serif;
+    --sans: 'Outfit', sans-serif;
+    --accent: #E8E0D0;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body { font-family: var(--sans); background: var(--black); color: var(--white); overflow-x: hidden; cursor: none; }
+
+  .cursor { width: 10px; height: 10px; background: var(--gold); border-radius: 50%; position: fixed; top: 0; left: 0; pointer-events: none; z-index: 9999; transform: translate(-50%, -50%); transition: width 0.2s, height 0.2s; mix-blend-mode: difference; }
+  .cursor-ring { width: 36px; height: 36px; border: 1px solid var(--gold); border-radius: 50%; position: fixed; top: 0; left: 0; pointer-events: none; z-index: 9998; transform: translate(-50%, -50%); transition: left 0.12s ease, top 0.12s ease, width 0.3s, height 0.3s; opacity: 0.6; }
+
+  nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; padding: 24px 60px; display: flex; align-items: center; justify-content: space-between; background: rgba(10,10,10,0.9); backdrop-filter: blur(20px); border-bottom: 1px solid rgba(201,169,110,0.12); }
+  .nav-logo { font-family: var(--serif); font-size: 22px; font-weight: 300; letter-spacing: 0.25em; color: var(--white); text-decoration: none; text-transform: uppercase; cursor: none; }
+  .nav-logo span { color: var(--gold); }
+  .nav-links { display: flex; gap: 40px; align-items: center; }
+  .nav-link { font-family: var(--sans); font-size: 10px; font-weight: 300; letter-spacing: 0.2em; text-transform: uppercase; color: var(--light); text-decoration: none; background: none; border: none; cursor: none; transition: color 0.3s; }
+  .nav-link:hover { color: var(--gold); }
+  .nav-breadcrumb { font-family: var(--sans); font-size: 10px; letter-spacing: 0.15em; color: var(--mid); }
+  .nav-breadcrumb span { color: var(--gold); }
+
+  /* HERO */
+  .collection-hero { height: 100vh; position: relative; overflow: hidden; display: flex; align-items: flex-end; }
+  .hero-split { position: absolute; inset: 0; display: grid; grid-template-columns: 1fr 1fr; }
+  .hero-img { position: relative; overflow: hidden; }
+  .hero-img img { width: 100%; height: 100%; object-fit: cover; object-position: top center; filter: grayscale(15%) contrast(1.05); transition: transform 8s ease; }
+  .hero-img:hover img { transform: scale(1.04); }
+  .hero-img::after { content: ''; position: absolute; inset: 0; background: linear-gradient(to bottom, rgba(10,10,10,0.2) 0%, rgba(10,10,10,0.7) 100%); }
+  .hero-overlay { position: absolute; inset: 0; background: linear-gradient(135deg, rgba(10,10,10,0.5) 0%, transparent 60%); }
+  .hero-content { position: relative; z-index: 2; padding: 0 60px 80px; width: 100%; }
+  .hero-eyebrow { font-family: var(--sans); font-size: 10px; letter-spacing: 0.5em; text-transform: uppercase; color: var(--gold); margin-bottom: 16px; animation: fadeUp 1s ease both; }
+  .hero-title { font-family: var(--serif); font-size: clamp(60px, 10vw, 130px); font-weight: 300; letter-spacing: 0.06em; line-height: 0.9; text-transform: uppercase; animation: fadeUp 1s 0.15s ease both; }
+  .hero-title em { color: var(--gold); font-style: italic; }
+  .hero-sub { font-family: var(--serif); font-size: 18px; font-weight: 300; font-style: italic; color: var(--light); margin-top: 20px; animation: fadeUp 1s 0.3s ease both; max-width: 500px; line-height: 1.5; }
+  .hero-meta { display: flex; gap: 40px; margin-top: 40px; animation: fadeUp 1s 0.45s ease both; }
+  .hero-stat { }
+  .hero-stat-num { font-family: var(--serif); font-size: 32px; font-weight: 300; color: var(--gold); }
+  .hero-stat-label { font-family: var(--sans); font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--mid); margin-top: 4px; }
+
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+
+  /* TICKER */
+  .ticker { background: var(--gold); padding: 10px 0; overflow: hidden; }
+  .ticker-inner { display: flex; gap: 60px; white-space: nowrap; animation: ticker 25s linear infinite; font-family: var(--sans); font-size: 10px; font-weight: 500; letter-spacing: 0.3em; text-transform: uppercase; color: var(--black); }
+  @keyframes ticker { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+  /* COLLECTION DESC */
+  .collection-intro { padding: 100px 60px; max-width: 1400px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center; }
+  .intro-label { font-family: var(--sans); font-size: 10px; letter-spacing: 0.35em; text-transform: uppercase; color: var(--gold); margin-bottom: 16px; }
+  .gold-line { width: 60px; height: 1px; background: var(--gold); margin-bottom: 24px; }
+  .intro-title { font-family: var(--serif); font-size: clamp(32px, 4vw, 52px); font-weight: 300; line-height: 1.2; margin-bottom: 24px; }
+  .intro-title em { color: var(--gold); font-style: italic; }
+  .intro-para { font-family: var(--sans); font-size: 14px; font-weight: 300; color: var(--light); line-height: 1.9; margin-bottom: 16px; }
+  .intro-right { }
+  .collection-tags { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 32px; }
+  .tag { font-family: var(--sans); font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; padding: 8px 18px; border: 1px solid rgba(201,169,110,0.3); color: var(--gold); }
+  .intro-quote { font-family: var(--serif); font-size: 28px; font-weight: 300; font-style: italic; line-height: 1.5; color: var(--white); border-left: 2px solid var(--gold); padding-left: 28px; }
+
+  /* PIECES GRID */
+  .pieces-section { padding: 0 60px 100px; max-width: 1400px; margin: 0 auto; }
+  .pieces-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 48px; }
+  .pieces-title { font-family: var(--serif); font-size: 42px; font-weight: 300; }
+  .pieces-title em { color: var(--gold); font-style: italic; }
+  .pieces-count { font-family: var(--sans); font-size: 11px; letter-spacing: 0.2em; color: var(--mid); }
+
+  .pieces-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 2px; }
+  .piece-card { position: relative; overflow: hidden; background: var(--dark); }
+  .piece-card.tall { aspect-ratio: 2/3; }
+  .piece-card.wide { aspect-ratio: 4/3; }
+  .piece-card.square { aspect-ratio: 1; }
+  .piece-card img { width: 100%; height: 100%; object-fit: cover; object-position: top center; transition: transform 0.8s ease, filter 0.5s; filter: grayscale(8%); display: block; }
+  .piece-card:hover img { transform: scale(1.06); filter: grayscale(0%); }
+  .piece-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(10,10,10,0.92) 0%, rgba(10,10,10,0.2) 50%, transparent 100%); opacity: 0.6; transition: opacity 0.4s; display: flex; flex-direction: column; justify-content: flex-end; padding: 32px; }
+  .piece-card:hover .piece-overlay { opacity: 1; }
+  .piece-badge { display: inline-block; font-family: var(--sans); font-size: 9px; font-weight: 500; letter-spacing: 0.25em; text-transform: uppercase; padding: 5px 12px; margin-bottom: 12px; background: var(--gold); color: var(--black); }
+  .piece-badge.limited { background: rgba(10,10,10,0.85); border: 1px solid rgba(201,169,110,0.5); color: var(--gold); }
+  .piece-badge.sold { background: rgba(10,10,10,0.85); border: 1px solid rgba(255,255,255,0.2); color: var(--mid); }
+  .piece-artist { font-family: var(--sans); font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold); margin-bottom: 6px; }
+  .piece-name { font-family: var(--serif); font-size: 28px; font-weight: 300; line-height: 1.1; margin-bottom: 4px; }
+  .piece-type { font-family: var(--sans); font-size: 12px; font-weight: 300; color: var(--light); letter-spacing: 0.08em; margin-bottom: 16px; }
+  .piece-bottom { display: flex; align-items: center; justify-content: space-between; }
+  .piece-price { font-family: var(--serif); font-size: 24px; font-weight: 300; color: var(--gold); }
+  .piece-btn { font-family: var(--sans); font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase; padding: 8px 20px; border: 1px solid rgba(255,255,255,0.3); color: var(--white); background: none; cursor: none; transition: all 0.3s; }
+  .piece-btn:hover { border-color: var(--gold); color: var(--gold); }
+
+  /* FEATURED FULL */
+  .featured-full { position: relative; height: 70vh; overflow: hidden; margin-bottom: 2px; }
+  .featured-full img { width: 100%; height: 100%; object-fit: cover; object-position: center 20%; transition: transform 8s ease; filter: grayscale(10%); }
+  .featured-full:hover img { transform: scale(1.04); }
+  .featured-full-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(10,10,10,0.9) 0%, rgba(10,10,10,0.2) 60%, transparent 100%); display: flex; flex-direction: column; justify-content: flex-end; padding: 60px; }
+  .featured-tag { font-family: var(--sans); font-size: 10px; letter-spacing: 0.35em; text-transform: uppercase; color: var(--gold); margin-bottom: 12px; }
+  .featured-name { font-family: var(--serif); font-size: clamp(40px, 6vw, 80px); font-weight: 300; line-height: 1; margin-bottom: 8px; }
+  .featured-desc { font-family: var(--sans); font-size: 14px; font-weight: 300; color: var(--light); max-width: 500px; line-height: 1.7; margin-bottom: 24px; }
+  .featured-row { display: flex; align-items: center; gap: 32px; }
+  .featured-price { font-family: var(--serif); font-size: 36px; font-weight: 300; color: var(--gold); }
+
+  /* BACK SECTION */
+  .back-section { background: var(--near-black); border-top: 1px solid rgba(201,169,110,0.1); padding: 80px 60px; text-align: center; }
+  .back-title { font-family: var(--serif); font-size: 32px; font-weight: 300; margin-bottom: 12px; }
+  .back-sub { font-family: var(--sans); font-size: 13px; color: var(--light); font-weight: 300; margin-bottom: 32px; letter-spacing: 0.05em; }
+  .btn-row { display: flex; gap: 16px; justify-content: center; }
+  .btn { display: inline-block; font-family: var(--sans); font-size: 10px; font-weight: 500; letter-spacing: 0.2em; text-transform: uppercase; text-decoration: none; cursor: none; transition: all 0.3s; border: none; }
+  .btn-gold { background: var(--gold); color: var(--black); padding: 14px 36px; }
+  .btn-gold:hover { background: var(--gold-light); }
+  .btn-outline { background: transparent; color: var(--gold); border: 1px solid var(--gold); padding: 13px 36px; }
+  .btn-outline:hover { background: var(--gold); color: var(--black); }
+
+  /* OTHER COLLECTIONS */
+  .other-collections { padding: 80px 60px; max-width: 1400px; margin: 0 auto; }
+  .other-title { font-family: var(--serif); font-size: 38px; font-weight: 300; margin-bottom: 8px; }
+  .other-title em { color: var(--gold); font-style: italic; }
+  .other-sub { font-family: var(--sans); font-size: 13px; color: var(--mid); margin-bottom: 48px; letter-spacing: 0.1em; }
+  .other-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; }
+  .other-card { position: relative; aspect-ratio: 2/3; overflow: hidden; background: var(--dark); text-decoration: none; display: block; }
+  .other-card img { width: 100%; height: 100%; object-fit: cover; object-position: top center; transition: transform 0.7s ease; filter: grayscale(30%); }
+  .other-card:hover img { transform: scale(1.07); filter: grayscale(0%); }
+  .other-card-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(10,10,10,0.9) 0%, transparent 60%); display: flex; flex-direction: column; justify-content: flex-end; padding: 24px; }
+  .other-card-label { font-family: var(--sans); font-size: 9px; letter-spacing: 0.3em; text-transform: uppercase; color: var(--gold); margin-bottom: 6px; }
+  .other-card-name { font-family: var(--serif); font-size: 24px; font-weight: 300; color: var(--white); margin-bottom: 4px; }
+  .other-card-count { font-family: var(--sans); font-size: 11px; font-weight: 300; color: var(--light); }
+
+  footer { padding: 60px; border-top: 1px solid rgba(201,169,110,0.15); background: var(--black); }
+  .footer-inner { max-width: 1400px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; }
+  .footer-logo { font-family: var(--serif); font-size: 24px; font-weight: 300; letter-spacing: 0.2em; text-transform: uppercase; }
+  .footer-logo span { color: var(--gold); }
+  .footer-copy { font-family: var(--sans); font-size: 11px; color: var(--mid); }
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursor-ring"></div>
+
+<nav>
+  <a class="nav-logo" href="index.html">BL<span>IM</span>INAL</a>
+  <div class="nav-links">
+    <a class="nav-link" href="index.html">Home</a>
+    <a class="nav-link" href="index.html#collections">Collections</a>
+    <a class="nav-link" href="index.html#about">About</a>
+    <a class="nav-link" href="index.html#apply">Artist Apply</a>
+  </div>
+  <div class="nav-breadcrumb">Collection / <span>Void &amp; Shroud</span></div>
+</nav>
+
+<!-- HERO -->
+<section class="collection-hero">
+  <div class="hero-split">
+    <div class="hero-img">
+      <img src="download__12_.jpg" alt="Void & Shroud — Piece 01">
+    </div>
+    <div class="hero-img">
+      <img src="fashion.jpg" alt="Void & Shroud — Piece 02">
+    </div>
+  </div>
+  <div class="hero-overlay"></div>
+  <div class="hero-content">
+    <p class="hero-eyebrow">Collection 001 · Spring 2025</p>
+    <h1 class="hero-title">Void &amp; <em>Shroud</em></h1>
+    <p class="hero-sub">Where the body dissolves into fabric. Where identity is wrapped, bound, and released.</p>
+    <div class="hero-meta">
+      <div class="hero-stat">
+        <div class="hero-stat-num">2</div>
+        <div class="hero-stat-label">Pieces Available</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-num">1/1</div>
+        <div class="hero-stat-label">All Unique</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-num">2025</div>
+        <div class="hero-stat-label">Season</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TICKER -->
+<div class="ticker">
+  <div class="ticker-inner">
+    <span>Void &amp; Shroud ✦</span><span>Identity Unbound ✦</span><span>Wrapped · Draped · Released ✦</span><span>Spring 2025 ✦</span><span>1 of 1 Originals ✦</span><span>BLiminal Collection 001 ✦</span>
+    <span>Void &amp; Shroud ✦</span><span>Identity Unbound ✦</span><span>Wrapped · Draped · Released ✦</span><span>Spring 2025 ✦</span><span>1 of 1 Originals ✦</span><span>BLiminal Collection 001 ✦</span>
+  </div>
+</div>
+
+<!-- INTRO -->
+<div class="collection-intro">
+  <div>
+    <p class="intro-label">About This Collection</p>
+    <div class="gold-line"></div>
+    <h2 class="intro-title">The <em>body</em> as architecture. Fabric as skin.</h2>
+    <p class="intro-para">Void & Shroud interrogates the boundary between garment and body — where one ends and the other begins. Each piece in this collection wraps the wearer in layers of raw, unfinished cotton and linen, evoking ancient ritual dress, industrial packaging, and post-apocalyptic anonymity.</p>
+    <p class="intro-para">The artist approach here is total: no conventional cuts, no pattern symmetry. These are pieces sculpted around the body in motion, photographed live on the runway and translated into wearable originals.</p>
+    <div class="collection-tags">
+      <span class="tag">Sculptural</span>
+      <span class="tag">Avant-Garde</span>
+      <span class="tag">Monochrome</span>
+      <span class="tag">Raw Textile</span>
+    </div>
+  </div>
+  <div class="intro-right">
+    <p class="intro-quote">"To cover the face is not to hide — it is to let the garment speak for what the body cannot."</p>
+  </div>
+</div>
+
+<!-- PIECES -->
+<div class="pieces-section">
+  <div class="pieces-header">
+    <h2 class="pieces-title">The <em>Pieces</em></h2>
+    <span class="pieces-count">2 Works · All Available</span>
+  </div>
+
+  <div class="featured-full">
+    <img src="download__12_.jpg" alt="Void Reverie">
+    <div class="featured-full-overlay">
+      <p class="featured-tag">Void &amp; Shroud · Piece 001</p>
+      <h2 class="featured-name">Void Reverie</h2>
+      <p class="featured-desc">Layered raw cotton, hand-knotted linen cord, oversized deconstructed silhouette. A runway original — worn once, never reproduced.</p>
+      <div class="featured-row">
+        <div class="featured-price">$1,400</div>
+        <span class="piece-badge" style="margin-bottom:0">1 of 1</span>
+        <button class="piece-btn" style="cursor:none">Enquire</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="pieces-grid">
+    <div class="piece-card tall" style="grid-column: 1 / 2;">
+      <img src="fashion.jpg" alt="Phantom Procession">
+      <div class="piece-overlay">
+        <span class="piece-badge limited">1 of 1</span>
+        <p class="piece-artist">Void &amp; Shroud · Piece 002</p>
+        <h3 class="piece-name">Phantom Procession</h3>
+        <p class="piece-type">Multi-figure installation look · Draped White Cotton</p>
+        <div class="piece-bottom">
+          <div class="piece-price">$2,800</div>
+          <button class="piece-btn">Enquire</button>
+        </div>
+      </div>
+    </div>
+    <div class="piece-card tall" style="grid-column: 2 / 3; background: var(--near-black); display: flex; align-items: center; justify-content: center; flex-direction: column; padding: 60px; gap: 20px; text-align: center;">
+      <p style="font-family: var(--serif); font-size: 80px; font-weight: 300; color: rgba(201,169,110,0.08);">∅</p>
+      <p style="font-family: var(--sans); font-size: 10px; letter-spacing: 0.3em; text-transform: uppercase; color: var(--gold);">The Void</p>
+      <p style="font-family: var(--serif); font-size: 22px; font-weight: 300; font-style: italic; color: var(--light); line-height: 1.6; max-width: 300px;">"Every collection ends in emptiness — and emptiness is where the next one begins."</p>
+      <a href="index.html" class="btn btn-outline" style="margin-top: 16px;">← Return to BLIMINAL</a>
+    </div>
+  </div>
+</div>
+
+<!-- OTHER COLLECTIONS -->
+<div class="other-collections">
+  <h2 class="other-title">More <em>Collections</em></h2>
+  <p class="other-sub">Continue exploring the BLiminal archive</p>
+  <div class="other-grid">
+    <a class="other-card" href="collection-cipher.html">
+      <img src="download__5_.jpg" alt="Cipher">
+      <div class="other-card-overlay">
+        <p class="other-card-label">Collection 002</p>
+        <p class="other-card-name">Cipher</p>
+        <p class="other-card-count">2 Pieces · Dark Techwear</p>
+      </div>
+    </a>
+    <a class="other-card" href="collection-ethereal-form.html">
+      <img src="download__6_.jpg" alt="Ethereal Form">
+      <div class="other-card-overlay">
+        <p class="other-card-label">Collection 003</p>
+        <p class="other-card-name">Ethereal Form</p>
+        <p class="other-card-count">4 Pieces · Sculptural Couture</p>
+      </div>
+    </a>
+    <a class="other-card" href="collection-chromatic-rebellion.html">
+      <img src="download.jpg" alt="Chromatic Rebellion">
+      <div class="other-card-overlay">
+        <p class="other-card-label">Collection 004</p>
+        <p class="other-card-name">Chromatic Rebellion</p>
+        <p class="other-card-count">3 Pieces · Street Art</p>
+      </div>
+    </a>
+  </div>
+</div>
+
+<div class="back-section">
+  <h2 class="back-title">Go <em style="color:var(--gold); font-family:var(--serif); font-style:italic;">Beyond</em></h2>
+  <p class="back-sub">Return to the full BLiminal experience</p>
+  <div class="btn-row">
+    <a href="index.html" class="btn btn-gold">← Back to BLIMINAL</a>
+    <a href="index.html#apply" class="btn btn-outline">Apply as Artist</a>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-logo">BL<span>im</span>inal</div>
+    <span class="footer-copy">© 2025 BLiminal / HyperLim. All rights reserved.</span>
+  </div>
+</footer>
+
+<script>
+  const cursor = document.getElementById('cursor');
+  const ring = document.getElementById('cursor-ring');
+  let mx=0,my=0,rx=0,ry=0;
+  document.addEventListener('mousemove', e => {
+    mx=e.clientX; my=e.clientY;
+    cursor.style.left=mx+'px'; cursor.style.top=my+'px';
+  });
+  function animRing(){ rx+=(mx-rx)*0.12; ry+=(my-ry)*0.12; ring.style.left=rx+'px'; ring.style.top=ry+'px'; requestAnimationFrame(animRing); }
+  animRing();
+  document.addEventListener('mouseover', e => {
+    if(e.target.closest('a,button,.piece-card,.other-card')){ cursor.style.width='14px'; cursor.style.height='14px'; ring.style.width='50px'; ring.style.height='50px'; }
+  });
+  document.addEventListener('mouseout', e => {
+    if(e.target.closest('a,button,.piece-card,.other-card')){ cursor.style.width='10px'; cursor.style.height='10px'; ring.style.width='36px'; ring.style.height='36px'; }
+  });
+</script>
+</body>
+</html>
