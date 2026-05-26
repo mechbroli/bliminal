@@ -412,7 +412,7 @@
   }
   .drop-pieces strong { color: var(--gold); font-weight: 500; }
 
-  /* STYLES */
+  /* STYLES (kept for backward compat, no longer rendered) */
   .styles-section { background: var(--black); }
   .styles-grid {
     display: grid; grid-template-columns: repeat(4, 1fr); gap: 2px;
@@ -463,6 +463,108 @@
     font-size: 16px; color: var(--white); opacity: 0; transition: all 0.3s;
   }
   .style-card:hover .style-arrow { opacity: 1; }
+
+  /* ===================== COLLECTIONS NAV (New Design) ===================== */
+  .collections-nav {
+    max-width: 1400px;
+    margin: 0 auto;
+    border-top: 1px solid rgba(201,169,110,0.15);
+  }
+  .cl-item {
+    display: grid;
+    grid-template-columns: 80px 1fr auto;
+    align-items: center;
+    padding: 36px 60px;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    text-decoration: none;
+    color: var(--white);
+    transition: all 0.4s;
+    position: relative;
+    background: var(--black);
+  }
+  .cl-item::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 2px;
+    background: var(--gold);
+    transform: scaleY(0);
+    transition: transform 0.4s ease;
+  }
+  .cl-item:hover::before {
+    transform: scaleY(1);
+  }
+  .cl-item:hover {
+    background: rgba(201,169,110,0.03);
+  }
+  .cl-item:hover .cl-name {
+    color: var(--gold-light);
+  }
+  .cl-num {
+    font-family: var(--serif);
+    font-size: 48px;
+    font-weight: 300;
+    color: rgba(201,169,110,0.08);
+    line-height: 1;
+    transition: color 0.4s;
+  }
+  .cl-item:hover .cl-num {
+    color: rgba(201,169,110,0.15);
+  }
+  .cl-info {}
+  .cl-name {
+    font-family: var(--serif);
+    font-size: 28px;
+    font-weight: 300;
+    margin-bottom: 6px;
+    transition: color 0.3s;
+  }
+  .cl-name em { color: var(--gold); font-style: italic; }
+  .cl-desc {
+    font-family: var(--sans);
+    font-size: 12px;
+    font-weight: 300;
+    color: var(--mid);
+    letter-spacing: 0.15em;
+  }
+  .cl-right {
+    display: flex;
+    align-items: center;
+    gap: 32px;
+  }
+  .cl-season {
+    font-family: var(--sans);
+    font-size: 10px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--mid);
+  }
+  .cl-arrow {
+    width: 40px; height: 40px;
+    border: 1px solid rgba(201,169,110,0.2);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; color: var(--gold);
+    opacity: 0;
+    transform: translateX(-8px);
+    transition: all 0.3s;
+  }
+  .cl-item:hover .cl-arrow {
+    opacity: 1;
+    transform: translateX(0);
+    border-color: var(--gold);
+  }
+  .cl-pieces {
+    font-family: var(--serif);
+    font-size: 14px;
+    font-weight: 300;
+    color: var(--gold);
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  .cl-item:hover .cl-pieces {
+    opacity: 1;
+  }
 
   /* MANIFESTO */
   .manifesto {
@@ -1034,9 +1136,9 @@
   <div class="nav-links">
     <button class="nav-link active" id="nav-home" onclick="showPage('home')">Home</button>
     <button class="nav-link" id="nav-about" onclick="showPage('about')">About</button>
-    <button class="nav-link" id="nav-collection" onclick="showPage('collection')">Collection</button>
+    <button class="nav-link" onclick="scrollToCollections()">Collections</button>
     <button class="nav-link" id="nav-signup" onclick="showPage('signup')">Artist Apply</button>
-    <button class="nav-cta btn" onclick="showPage('collection')">Shop Now</button>
+    <button class="nav-cta btn" onclick="scrollToCollections()">Shop Now</button>
   </div>
 </nav>
 
@@ -1052,7 +1154,7 @@
       <h1 class="hero-title">BL<span class="accent">im</span>inal</h1>
       <p class="hero-sub">Go Beyond — Where Art Becomes Fashion</p>
       <div class="hero-actions">
-        <button class="btn btn-primary" onclick="showPage('collection')">Explore Collection</button>
+        <button class="btn btn-primary" onclick="scrollToCollections()">Explore Collections</button>
         <button class="btn btn-outline" onclick="showPage('about')">Our Story</button>
       </div>
     </div>
@@ -1099,7 +1201,7 @@
           <div class="release-artist">by Sora Nakamura</div>
           <div class="release-meta">
             <div class="release-price">$1,400</div>
-            <button class="release-btn" onclick="showPage('collection')">View Piece</button>
+            <button class="release-btn" onclick="location.href='collection-void-shroud.html'">View Piece</button>
           </div>
         </div>
       </div>
@@ -1113,7 +1215,7 @@
           <div class="release-artist">by Alexei Petrov</div>
           <div class="release-meta">
             <div class="release-price">$680</div>
-            <button class="release-btn" onclick="showPage('collection')">View Piece</button>
+            <button class="release-btn" onclick="location.href='collection-cipher.html'">View Piece</button>
           </div>
         </div>
       </div>
@@ -1127,13 +1229,13 @@
           <div class="release-artist">by Mia Delacroix</div>
           <div class="release-meta">
             <div class="release-price">$920</div>
-            <button class="release-btn" onclick="showPage('collection')">View Piece</button>
+            <button class="release-btn" onclick="location.href='collection-ethereal-form.html'">View Piece</button>
           </div>
         </div>
       </div>
     </div>
     <div class="text-center mt-40">
-      <button class="btn btn-outline" onclick="showPage('collection')">View Full Collection</button>
+      <button class="btn btn-outline" onclick="scrollToCollections()">View All Collections</button>
     </div>
   </div>
 
@@ -1211,58 +1313,76 @@
     </div>
   </div>
 
-  <!-- Styles -->
-  <div class="section" style="padding-top:100px;">
+  <!-- Collections (replacing Styles) -->
+  <div class="section" id="collections" style="padding-top:100px;">
     <div class="section-header">
-      <p class="section-label">Browse by Style</p>
+      <p class="section-label">Explore</p>
       <div class="gold-line"></div>
-      <h2 class="section-title">Styles to <em>Discover</em></h2>
+      <h2 class="section-title">Our <em>Collections</em></h2>
+      <p class="section-desc">Five distinct worlds. Each a collaboration between artist and archive.</p>
     </div>
   </div>
-  <div class="styles-grid">
-    <div class="style-card" onclick="showPage('collection')">
-      <div class="style-bg"></div>
-      <div class="style-symbol">✦</div>
-      <div class="style-overlay">
-        <div class="style-tag">Style</div>
-        <div class="style-name">Abstract</div>
-        <div class="style-count">18 Pieces</div>
+  <div class="collections-nav">
+    <a class="cl-item" href="collection-void-shroud.html">
+      <div class="cl-num">001</div>
+      <div class="cl-info">
+        <div class="cl-name">Void &amp; <em>Shroud</em></div>
+        <div class="cl-desc">2 Pieces · Avant-Garde · Sculptural · Raw Textile</div>
       </div>
-      <div class="style-arrow">→</div>
-    </div>
-    <div class="style-card" onclick="showPage('collection')">
-      <div class="style-bg"></div>
-      <div class="style-symbol">◈</div>
-      <div class="style-overlay">
-        <div class="style-tag">Style</div>
-        <div class="style-name">Surrealist</div>
-        <div class="style-count">12 Pieces</div>
+      <div class="cl-right">
+        <div class="cl-season">Spring 2025</div>
+        <div class="cl-pieces">Explore →</div>
+        <div class="cl-arrow">→</div>
       </div>
-      <div class="style-arrow">→</div>
-    </div>
-    <div class="style-card" onclick="showPage('collection')">
-      <div class="style-bg"></div>
-      <div class="style-symbol">∞</div>
-      <div class="style-overlay">
-        <div class="style-tag">Style</div>
-        <div class="style-name">Conceptual</div>
-        <div class="style-count">9 Pieces</div>
+    </a>
+    <a class="cl-item" href="collection-cipher.html">
+      <div class="cl-num">002</div>
+      <div class="cl-info">
+        <div class="cl-name"><em>Cipher</em></div>
+        <div class="cl-desc">2 Pieces · Dark Techwear · Cyberpunk · Hardware</div>
       </div>
-      <div class="style-arrow">→</div>
-    </div>
-    <div class="style-card" onclick="showPage('collection')">
-      <div class="style-bg"></div>
-      <div class="style-symbol">◉</div>
-      <div class="style-overlay">
-        <div class="style-tag">Style</div>
-        <div class="style-name">Minimal</div>
-        <div class="style-count">22 Pieces</div>
+      <div class="cl-right">
+        <div class="cl-season">Winter 2025</div>
+        <div class="cl-pieces">Explore →</div>
+        <div class="cl-arrow">→</div>
       </div>
-      <div class="style-arrow">→</div>
-    </div>
-  </div>
-  <div class="text-center" style="padding: 48px 0;">
-    <button class="btn btn-outline" onclick="showPage('collection')">See All Styles</button>
+    </a>
+    <a class="cl-item" href="collection-ethereal-form.html">
+      <div class="cl-num">003</div>
+      <div class="cl-info">
+        <div class="cl-name">Ethereal <em>Form</em></div>
+        <div class="cl-desc">4 Pieces · Sculptural Couture · Haute Couture · Handmade</div>
+      </div>
+      <div class="cl-right">
+        <div class="cl-season">Couture 2025</div>
+        <div class="cl-pieces">Explore →</div>
+        <div class="cl-arrow">→</div>
+      </div>
+    </a>
+    <a class="cl-item" href="collection-chromatic-rebellion.html">
+      <div class="cl-num">004</div>
+      <div class="cl-info">
+        <div class="cl-name">Chromatic <em>Rebellion</em></div>
+        <div class="cl-desc">3 Pieces · Street Art · Graffiti · Maximalist</div>
+      </div>
+      <div class="cl-right">
+        <div class="cl-season">Street 2025</div>
+        <div class="cl-pieces">Explore →</div>
+        <div class="cl-arrow">→</div>
+      </div>
+    </a>
+    <a class="cl-item" href="collection-deconstructed.html">
+      <div class="cl-num">005</div>
+      <div class="cl-info">
+        <div class="cl-name"><em>Decon</em>structed</div>
+        <div class="cl-desc">3 Pieces · Tailoring · Avant-Garde · Runway</div>
+      </div>
+      <div class="cl-right">
+        <div class="cl-season">Autumn 2025</div>
+        <div class="cl-pieces">Explore →</div>
+        <div class="cl-arrow">→</div>
+      </div>
+    </a>
   </div>
 
   <!-- Manifesto -->
@@ -1350,7 +1470,7 @@
           <ul class="footer-links">
             <li><a onclick="showPage('home')" href="#">Home</a></li>
             <li><a onclick="showPage('about')" href="#">About Us</a></li>
-            <li><a onclick="showPage('collection')" href="#">Collection</a></li>
+            <li><a href="collection-void-shroud.html">Collections</a></li>
             <li><a onclick="showPage('signup')" href="#">Artist Apply</a></li>
           </ul>
         </div>
@@ -1366,7 +1486,7 @@
         <div class="footer-col">
           <h5>Contact</h5>
           <ul class="footer-links">
-            <li><a href="#">studio@bliminal.com</a></li>
+            <li><a href="#"><span class="__cf_email__" data-cfemail="53202726373a3c13313f3a3e3a3d323f7d303c3e">[email&#160;protected]</span></a></li>
             <li><a href="#">Instagram</a></li>
             <li><a href="#">TikTok</a></li>
             <li><a href="#">Newsletter</a></li>
@@ -1406,7 +1526,7 @@
         <p class="about-para">We curate partnerships with independent artists across every discipline — from textile sculpture to digital print — and transform their vision into limited-edition wearable art. Every drop is a cultural event. Every garment holds a story.</p>
         <p class="about-para" style="color: var(--gold);">Every item is one of a kind.</p>
         <div style="margin-top: 32px;">
-          <button class="btn btn-primary" onclick="showPage('collection')">Explore the Collection</button>
+          <button class="btn btn-primary" onclick="scrollToCollections()">Explore the Collections</button>
         </div>
       </div>
       <div class="about-visual">
@@ -1484,7 +1604,7 @@
             <p class="section-label">Ready to wear the story?</p>
             <div class="gold-line"></div>
             <h3 style="font-family:var(--serif);font-size:24px;font-weight:300;margin-bottom:20px;">Find your piece.</h3>
-            <button class="btn btn-primary" onclick="showPage('collection')">Shop Collection</button>
+            <button class="btn btn-primary" onclick="scrollToCollections()">Shop Collections</button>
           </div>
         </div>
       </div>
@@ -1540,7 +1660,7 @@
           <ul class="footer-links">
             <li><a onclick="showPage('home')" href="#">Home</a></li>
             <li><a onclick="showPage('about')" href="#">About Us</a></li>
-            <li><a onclick="showPage('collection')" href="#">Collection</a></li>
+            <li><a href="collection-void-shroud.html">Collections</a></li>
             <li><a onclick="showPage('signup')" href="#">Artist Apply</a></li>
           </ul>
         </div>
@@ -1555,7 +1675,7 @@
         <div class="footer-col">
           <h5>Contact</h5>
           <ul class="footer-links">
-            <li><a href="#">studio@bliminal.com</a></li>
+            <li><a href="#"><span class="__cf_email__" data-cfemail="cfbcbbbaaba6a08fada3a6a2a6a1aea3e1aca0a2">[email&#160;protected]</span></a></li>
             <li><a href="#">Instagram</a></li>
             <li><a href="#">TikTok</a></li>
           </ul>
@@ -1781,7 +1901,7 @@
           <ul class="footer-links">
             <li><a onclick="showPage('home')" href="#">Home</a></li>
             <li><a onclick="showPage('about')" href="#">About Us</a></li>
-            <li><a onclick="showPage('collection')" href="#">Collection</a></li>
+            <li><a href="collection-void-shroud.html">Collections</a></li>
             <li><a onclick="showPage('signup')" href="#">Artist Apply</a></li>
           </ul>
         </div>
@@ -1796,7 +1916,7 @@
         <div class="footer-col">
           <h5>Contact</h5>
           <ul class="footer-links">
-            <li><a href="#">studio@bliminal.com</a></li>
+            <li><a href="#"><span class="__cf_email__" data-cfemail="b1c2c5c4d5d8def1d3ddd8dcd8dfd0dd9fd2dedc">[email&#160;protected]</span></a></li>
             <li><a href="#">Instagram</a></li>
             <li><a href="#">TikTok</a></li>
           </ul>
@@ -2063,7 +2183,7 @@
           <ul class="footer-links">
             <li><a onclick="showPage('home')" href="#">Home</a></li>
             <li><a onclick="showPage('about')" href="#">About Us</a></li>
-            <li><a onclick="showPage('collection')" href="#">Collection</a></li>
+            <li><a href="collection-void-shroud.html">Collections</a></li>
             <li><a onclick="showPage('signup')" href="#">Artist Apply</a></li>
           </ul>
         </div>
@@ -2079,7 +2199,7 @@
         <div class="footer-col">
           <h5>Contact</h5>
           <ul class="footer-links">
-            <li><a href="#">studio@bliminal.com</a></li>
+            <li><a href="#"><span class="__cf_email__" data-cfemail="86f5f2f3e2efe9c6e4eaefebefe8e7eaa8e5e9eb">[email&#160;protected]</span></a></li>
             <li><a href="#">Instagram</a></li>
             <li><a href="#">TikTok</a></li>
           </ul>
@@ -2097,7 +2217,7 @@
   </footer>
 </div>
 
-<script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
 // ---- CUSTOM CURSOR ----
 const cursor = document.getElementById('cursor');
 const ring = document.getElementById('cursor-ring');
@@ -2107,7 +2227,7 @@ document.addEventListener('mousemove', e => {
   cursor.style.left = mx + 'px'; cursor.style.top = my + 'px';
 });
 function animRing() {
-  rx += (mx - rx) * 0.12; ry += (my - ry) *.12;
+  rx += (mx - rx) * 0.12; ry += (my - ry) * 0.12;
   ring.style.left = rx + 'px'; ring.style.top = ry + 'px';
   requestAnimationFrame(animRing);
 }
@@ -2127,6 +2247,14 @@ function showPage(name) {
   const navEl = document.getElementById('nav-' + name);
   if (navEl) navEl.classList.add('active');
   window.scrollTo(0, 0);
+}
+
+// ---- SCROLL TO COLLECTIONS ----
+function scrollToCollections() {
+  showPage('home');
+  setTimeout(function() {
+    document.getElementById('collections').scrollIntoView({ behavior: 'smooth' });
+  }, 150);
 }
 
 // ---- COUNTDOWN ----
@@ -2182,13 +2310,13 @@ function handleSubmit() {
 
 // ---- CURSOR HOVER EFFECTS ----
 document.addEventListener('mouseover', e => {
-  if (e.target.closest('button, a, .piece-card, .style-card, .artist-pill, .drop-card, .release-card')) {
+  if (e.target.closest('button, a, .piece-card, .style-card, .artist-pill, .drop-card, .release-card, .cl-item')) {
     cursor.style.width = '14px'; cursor.style.height = '14px';
     ring.style.width = '50px'; ring.style.height = '50px';
   }
 });
 document.addEventListener('mouseout', e => {
-  if (e.target.closest('button, a, .piece-card, .style-card, .artist-pill, .drop-card, .release-card')) {
+  if (e.target.closest('button, a, .piece-card, .style-card, .artist-pill, .drop-card, .release-card, .cl-item')) {
     cursor.style.width = '10px'; cursor.style.height = '10px';
     ring.style.width = '36px'; ring.style.height = '36px';
   }
